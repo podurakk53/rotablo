@@ -35,6 +35,8 @@ Ornek:
 - `routeSession` -> `route_session`
 - `stageCompletion` -> `stage_completion`
 
+Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar urunun core entity setinin parcasi degil, implementation destek katmanidir.
+
 ## 3. Veri Katmanlari
 
 ### A. Editorial content

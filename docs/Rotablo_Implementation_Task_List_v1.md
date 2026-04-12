@@ -56,13 +56,14 @@
 
 ### T3. Basic auth and RLS
 
-- Status: `next`
+- Status: `done`
 - Goal: admin ve public kullanimi ayirmak
 - Output: minimum auth + RLS kararlari ve uygulamasi
 - Acceptance:
   - admin/editorial veri girisi korumali olmali
   - published route'lar public okunabilir olmali
   - unpublished veya archived route'lar katalogda gorunmemeli
+  - mevcut routeSession sahipleri unpublished/archived route'u read-only gorebilmeli
 
 ## Phase 2 - Editorial Bootstrap
 
@@ -70,13 +71,14 @@
 
 - Status: `next`
 - Goal: Supabase Studio ile bir pilot route girilebilsin
-- Output: 1 route + stage'leri + sideQuest'leri + hazardProfile'lari
+- Output: 1 route + stage'leri + sideQuest'leri + hazardProfile'lari + operasyonel veri giris runbook'u
 - Acceptance:
   - en az 1 route publish edilebilir durumda olmali
   - ordered stage list girilebilmeli
   - sideQuest orderIndex dogru girilebilmeli
   - sideQuest type ve koordinat bilgisi girilebilmeli
   - hazard trait seti warning preview uretmeye yeterli olmali
+  - veri giris sirasi ve minimum checklist `docs/Rotablo_Pilot_Content_Entry_Runbook_v1.md` ile netlesmis olmali
 
 ### T5. Publish validation path
 

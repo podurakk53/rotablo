@@ -1,8 +1,8 @@
 # Current Task Context
 
-**Phase:** Supabase bootstrap and core schema completed, auth/RLS next
+**Phase:** Auth and RLS completed, editorial bootstrap next
 
-**Active Goal:** Continue implementation from a clean canonical surface: editorial route publishing, routeSession-based session flow, deterministic static route warnings, and Supabase-first execution.
+**Active Goal:** Move from platform setup into real editorial bootstrap: enter the first pilot route, validate publish readiness, then build the public/mobile flow on top of the locked Supabase boundary.
 
 ## Current Reality
 
@@ -15,11 +15,12 @@
 ## Immediate Priorities
 
 1. Keep the canonical docs and task list aligned before writing new code.
-2. Implement auth and RLS from the canonical docs before public/mobile work.
-3. Bootstrap editorial data entry next: `route`, `stage`, `sideQuest`, `hazardProfile`.
-4. Build public route browsing after auth boundaries are in place.
+2. Bootstrap editorial data entry next: `route`, `stage`, `sideQuest`, `hazardProfile`.
+3. Prove that one real pilot route can be entered and kept publish-ready in Supabase Studio.
+   Use `docs/Rotablo_Pilot_Content_Entry_Runbook_v1.md` as the operational entry order.
+4. Build public route browsing after editorial data entry works.
 5. Build `routeSession` start / resume / planning flow before warning implementation.
-6. Build the static route warning system only with the locked trait set, rule table, and compatibility rules.
+6. Build the static route warning system only with the locked trait set and compatibility rules.
 7. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.
 
 ## Do Not Reintroduce
