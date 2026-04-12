@@ -1,127 +1,97 @@
 # Rotablo Canonical Data Model v0
 
-## 1. Amaç
+**Durum:** Guncel planlama modeli  
+**Tarih:** 2026-04-12
 
-Bu doküman, Rotablo'nun ürün tanımını uygulamanın güvenebileceği kanonik veri modeline çevirir.
+## 1. Amac
 
-Amaç:
+Bu dokuman Rotablo'nun guncel urun yonunu veri modeline cevirir.
 
-- Excel gibi ham içerik kaynaklarını normalize etmek
-- ürün dilindeki kavramları net domain nesnelerine dönüştürmek
-- içerik verisi ile kullanıcı/runtime verisini ayırmak
-- ileride kurulacak veritabanı, API ve import hattına stabil bir temel vermek
+Ana hedef:
 
-Bu model, doğrudan SQL şeması değildir. Önce domain modelini sabitler.
+- editorial route authoring sistemini modellemek
+- public route consumption'u modellemek
+- `routeSession` tabanli runtime davranisini netlestirmek
+- statik rota uyarilari ve arac uyumlulugunu desteklemek
 
-## 2. Modelleme İlkeleri
+## 2. Modelleme Ilkeleri
 
-Rotablo veri modeli şu ilkelere göre kurulmalıdır:
+1. Icerik kuratorludur; kullanici tarafindan serbest uretilmez.
+2. Route authoring ve public consumption ayri ihtiyaclardir.
+3. Uyarilar trait ve kural tabanli olmalidir.
+4. Sistem canli weather provider'a bagimli olmadan calisabilmelidir.
+5. Route ilerleme ve planning icin tek runtime nesnesi `routeSession` olmalidir.
+6. Excel referans olabilir; modelin kaynagi degildir.
 
-1. Görsel veya sembolik veri değil, anlam saklanır.
-2. Excel satır yapısı değil, ürün nesneleri kaynak kabul edilir.
-3. Küratörlü içerik ile kullanıcı eylemleri farklı katmanlarda tutulur.
-4. Uyarılar serbest metin olarak değil, mümkün olduğunca trait tabanlı modellenir.
-5. Hesaplanan değerler ile kaynak veriler karıştırılmaz.
-6. Etap, sistemdeki ana atomik sürüş birimidir.
+## SQL Notu
 
-## 3. Veri Katmanları
+Canonical dokuman entity isimlerini urun diliyle yazar. Fiziksel PostgreSQL semasi ise snake_case kullanir.
 
-Rotablo verisi üç katmanda düşünülmelidir:
+Ornek:
 
-### A. Küratörlü içerik katmanı
+- `sideQuest` -> `side_quest`
+- `hazardProfile` -> `hazard_profile`
+- `vehicleProfile` -> `vehicle_profile`
+- `routeSession` -> `route_session`
+- `stageCompletion` -> `stage_completion`
 
-Editör veya import süreciyle üretilen, kullanıcıdan bağımsız sabit içerik.
+## 3. Veri Katmanlari
 
-Temel nesneler:
+### A. Editorial content
 
 - `route`
 - `stage`
 - `sideQuest`
-- `achievementDefinition`
-- `geoAsset`
 - `hazardProfile`
+- `mediaAsset` optional
 
-### B. Türetilmiş sistem katmanı
+### B. Derived system data
 
-İçerik ve kurallardan üretilen, ama kullanıcıya özel olmayan sistem verisi.
+- `routeWarningSummary`
+- `warningMatch`
+- `routeStats` optional
 
-Örnekler:
-
-- stage zorluk bandı
-- stage risk seviyesi
-- önerilen araç segmenti
-- stage toplam puanı
-- rota toplam km
-
-### C. Kullanıcı / runtime katmanı
-
-Kullanıcıya, planına ve ilerlemesine bağlı veriler.
-
-Temel nesneler:
+### C. User / runtime data
 
 - `vehicleProfile`
+- `routeSession`
 - `budgetScenario`
-- `tripPlan`
-- `tripSelection`
 - `stageCompletion`
-- `achievementProgress`
-- `xpLedger`
 
-## 4. Çekirdek İçerik Nesneleri
+## 4. Editorial Content Nesneleri
 
 ## 4.1 `route`
 
-Bir rota, kullanıcıya gösterilen üst düzey oynanabilir omurgadır.
-
-Route şu tiplerden biri olabilir:
-
-- `main`
-- `bypass`
-- `connector`
-
-`sideQuest`, route değil; ayrı bir nesne olarak modellenmelidir.
-
-### Route alanları
+### Temel alanlar
 
 - `id`
 - `code`
 - `slug`
 - `name`
-- `family`
+- `family` = `main` | `bypass` | `connector`
 - `summary`
 - `description`
 - `originLabel`
 - `destinationLabel`
 - `isLoop`
-- `isCrossBorder`
 - `countrySet`
 - `regionSet`
-- `defaultStartCity`
-- `defaultEndCity`
 - `plannedStageCount`
-- `plannedDayCount`
 - `plannedDistanceKm`
-- `status`
+- `status` = `draft` | `published` | `archived`
 - `sortOrder`
-- `heroAssetId`
-- `mapAssetId`
-- `connectsFromRouteId` nullable
-- `connectsToRouteId` nullable
+- `heroAssetId` nullable
+- `publishedAt` nullable
+- `revisionNumber`
 
-### Route notları
+### Notlar
 
-- `main` rotalar ürünün ana omurgasıdır.
-- `bypass` rotalar kendi başına kısa rota gibi çalışabilir.
-- `connector` rotalar iki rota ailesi arasında köprü görevi görür.
-- `connectsFromRouteId` ve `connectsToRouteId`, özellikle `connector` ve bazı `bypass` rotalar için anlamlıdır.
+- route, kullanici tarafindan olusturulmaz
+- public gorunurluk icin esas durum `published` olmalidir
 
 ## 4.2 `stage`
 
-Stage, Rotablo'daki en küçük tamamlanabilir ana sürüş birimidir.
-
-Her stage tam olarak bir route'a bağlıdır.
-
-### Stage alanları
+### Temel alanlar
 
 - `id`
 - `routeId`
@@ -131,184 +101,161 @@ Her stage tam olarak bir route'a bağlıdır.
 - `dayNumber` nullable
 - `dayLabel` nullable
 - `title`
+- `originLabel`
+- `destinationLabel`
 - `summary`
 - `distanceKm`
 - `estimatedDriveMinutes` nullable
 - `difficultyScore`
 - `sceneryScore`
-- `flowIndex` nullable
-- `echoIndex` nullable
-- `gPotIndex` nullable
 - `questTags`
-- `primaryVisitName`
-- `primaryVisitSummary`
+- `primaryVisitName` nullable
+- `primaryVisitSummary` nullable
 - `detourAnchorName` nullable
 - `detourKm` default `0`
-- `lodgingOptions`
-- `foodOptions`
-- `achievementDefinitionId` nullable
-- `hazardProfileId`
-- `geoAssetId` nullable
 - `surfaceType` nullable
 - `roadCharacter` nullable
-- `fixedRouteFeeTl` nullable
-- `fixedRouteFeeNote` nullable
-- `country`
-- `region`
-- `status`
-
-### Stage model kararları
-
-- `sequenceIndex`, route içindeki gerçek sıralamadır ve zorunludur.
-- `dayNumber`, yalnızca gerçekten gün bazlı rotalarda dolu olur.
-- `dayLabel`, ham kaynaktaki `X`, `Y` gibi değerleri kaybetmemek için vardır; ürün ekranında zorunlu değildir.
-- `title`, kullanıcı dostu başlıktır; gerekiyorsa editöryal olarak ayrıca yazılır.
-- `primaryVisitName` ve `primaryVisitSummary`, mevcut Excel'deki `Ziyaret Noktası -- Quest Detayı` alanının ayrıştırılmış halidir.
+- `lodgingOptions` nullable
+- `foodOptions` nullable
+- `hazardProfileId`
+- `status` = `draft` | `published` | `archived`
 
 ## 4.3 `sideQuest`
 
-Side quest, ana stage'den sapılıp geri dönülen isteğe bağlı keşif etabıdır.
-
-Bu nesne route değildir. Bir `hostStage` üzerine bağlanır.
-
-### Side quest alanları
+### Temel alanlar
 
 - `id`
 - `hostStageId`
 - `hostRouteId`
 - `code`
 - `slug`
+- `orderIndex`
 - `name`
+- `type` = `gastronomy` | `viewpoint` | `natureSpot` | `ancientSite` | `driveSegment` | `townStop`
+- `stopStyle` = `stop` | `drive`
 - `summary`
 - `distanceKm`
 - `detourKm`
 - `detourAnchorName`
+- `latitude`
+- `longitude`
 - `difficultyScore`
 - `sceneryScore`
-- `flowIndex` nullable
-- `echoIndex` nullable
-- `gPotIndex` nullable
 - `questTags`
-- `achievementDefinitionId` nullable
 - `hazardProfileId`
-- `geoAssetId` nullable
-- `fixedRouteFeeTl` nullable
-- `fixedRouteFeeNote` nullable
-- `country`
-- `region`
-- `status`
+- `status` = `draft` | `published` | `archived`
 
-### Side quest kuralları
+### Notlar
 
-- Her side quest bir stage'e bağlı olmalıdır.
-- Side quest tek başına rota kataloğunda ana ürün nesnesi gibi sunulmamalıdır.
-- Planlama ekranında kullanıcı tarafından açıkça eklenip çıkarılabilmelidir.
+- sideQuest, route family uyesi degildir
+- ayni stage altinda `orderIndex` ile siralanir
+- haritada gosterilecek sideQuest'ler koordinat tasir
+- sideQuest karti veya marker'i dis navigasyon uygulamasina handoff icin kullanilabilir
 
-## 4.4 `achievementDefinition`
+## 4.4 `hazardProfile`
 
-Achievement, küratörlü bir ödül tanımıdır.
-
-### AchievementDefinition alanları
+### Temel alanlar
 
 - `id`
-- `code`
-- `title`
-- `scope`
-- `description`
-- `badgeKey`
-- `xpReward`
-- `rarity` nullable
-- `status`
+- `lowClearanceRisk` boolean
+- `roughSurfaceRisk` boolean
+- `highAltitudeRisk` boolean
+- `narrowRoadRisk` boolean
+- `steepGradeRisk` boolean
+- `hairpinDensity` = `low` | `medium` | `high`
+- `rainSensitive` boolean
+- `fogSensitive` boolean
+- `snowSensitive` boolean
+- `remoteAccessRisk` boolean
+- `fatigueLoad` = `low` | `medium` | `high`
+- `notes` nullable
 
-### Scope değerleri
+### Notlar
 
-- `stage`
-- `route`
-- `sideQuest`
+- stage ve sideQuest'ler serbest metin warning yerine trait setine baglanir
+- route warning kopyasi bu trait'lerden turetilir
 
-## 4.5 `hazardProfile`
+## 5. Derived Data Nesneleri
 
-Araç bazlı uyarılar doğrudan stage üstüne serbest metin olarak gömülmemelidir. Bunun yerine stage veya side quest bir risk profiline bağlanmalıdır.
+## 5.1 `routeWarningSummary`
 
-### HazardProfile alanları
+### Temel alanlar
 
-- `id`
-- `lowClearanceRisk`
-- `narrowRoadRisk`
-- `cliffEdgeRisk`
-- `hairpinDensity`
-- `coldSurfaceRisk`
-- `highAltitudeRisk`
-- `roughSurfaceRisk`
-- `tunnelEchoPresence`
-- `seasonalSensitivity`
-- `crossBorderComplexity`
-- `notes`
+- `routeId`
+- `generalWarningItems`
+- `vehicleCompatibilityItems` optional
 
-### Model mantığı
+### Notlar
 
-- İçerik katmanı risk trait'lerini saklar.
-- Runtime motoru, kullanıcının araç profiline göre bu trait'lerden uyarı üretir.
-- Böylece aynı stage için farklı araçlarda farklı uyarı mesajı üretilebilir.
+- kalici kayit olmak zorunda degildir
+- route detail veya routeSession ekraninda on-the-fly uretilebilir
 
-## 4.6 `geoAsset`
+## 5.2 `warningMatch`
 
-GeoJSON veya benzeri coğrafi veriler içerik nesnesinden ayrı tutulmalıdır.
+### Temel alanlar
 
-### GeoAsset alanları
+- `ruleCode`
+- `severity` = `info` | `caution` | `high`
+- `sourceScope` = `route` | `stage` | `sideQuest`
+- `sourceId`
+- `triggerTraits`
+- `message`
 
-- `id`
-- `entityType`
-- `entityId`
-- `geometryType`
-- `sourceType`
-- `sourcePath`
-- `bbox`
-- `distanceKm`
-- `startPointLabel`
-- `endPointLabel`
-- `status`
+## 6. Runtime Nesneleri
 
-### Neden ayrı nesne?
+## 6.1 `vehicleProfile`
 
-- geometri verisi ağırdır
-- aynı nesne için farklı çözünürlüklerde veri tutulabilir
-- mobil istemci, gerektiğinde özet veya detay geometri çekebilir
-
-## 5. Kullanıcı / Runtime Nesneleri
-
-## 5.1 `vehicleProfile`
-
-Araç profili, uyarı sistemi ve öneri motoru için temel kullanıcı nesnesidir.
-
-### VehicleProfile alanları
+### Temel alanlar
 
 - `id`
 - `userId`
 - `brand`
 - `model`
-- `year` nullable
 - `bodyType`
 - `drivetrain`
-- `transmission` nullable
 - `groundClearanceClass`
 - `tireSeason`
-- `tirePerformanceClass` nullable
-- `powerBand` nullable
-- `usageStyle` nullable
 - `isPrimary`
 
-### Başlangıç enum mantığı
+### Enumlar
 
-- `groundClearanceClass`: `low`, `medium`, `high`
-- `tireSeason`: `summer`, `allSeason`, `winter`
-- `drivetrain`: `fwd`, `rwd`, `awd`, `4wd`
+- `bodyType`: `sedan` | `suv` | `hatchback` | `coupe` | `convertible`
+- `drivetrain`: `fwd` | `rwd` | `awd` | `4wd`
+- `groundClearanceClass`: `low` | `medium` | `high`
+- `tireSeason`: `summer` | `allSeason` | `winter`
 
-## 5.2 `budgetScenario`
+## 6.2 `routeSession`
 
-Kullanıcının rotayı farklı ekonomik parametrelerle değerlendirdiği hesap senaryosu.
+### Temel alanlar
 
-### BudgetScenario alanları
+- `id`
+- `userId`
+- `routeId`
+- `vehicleProfileId`
+- `budgetScenarioId` nullable
+- `status` = `active` | `incomplete` | `completed`
+- `startedAt` nullable
+- `completedAt` nullable
+- `activeStageId` nullable
+- `selectedStageIds` nullable
+- `plannedSideQuestIds` nullable
+
+### Notlar
+
+- ayri `savedRoute` runtime nesnesi yoktur
+- routeSession ilk companion girisinde `active` olarak acilir
+- kullanici route'u bitirmeden ayrilirsa session `incomplete` olur
+- kullanici `incomplete` session'a geri donerse session tekrar `active` olabilir
+- `selectedStageIds` ve `plannedSideQuestIds` V1'de basit array/json olarak tutulabilir; referential integrity app/service katmaninda korunur
+- `plannedSideQuestIds` planlama yardimcisidir; baglayici degildir
+- kullanici acik session icinde sideQuest planini degistirebilir ve planlamadigi bir sideQuest'i yine tamamlayabilir
+- ayni `userId + routeId` icin en fazla 1 acik `active` veya `incomplete` session olabilir
+- route unpublished veya archived olursa mevcut session read-only gorunur; yeni session olusturulmaz
+- V1'de routeSession per-session revision snapshot tutmaz; yayinlanmis icerik en son published revizyona gore okunur
+
+## 6.3 `budgetScenario`
+
+### Temel alanlar
 
 - `id`
 - `userId`
@@ -318,350 +265,61 @@ Kullanıcının rotayı farklı ekonomik parametrelerle değerlendirdiği hesap 
 - `lodgingTier`
 - `lodgingDailyTl`
 - `foodDailyTl`
-- `includeFixedRouteFees`
 - `currency`
 
-### Not
+## 6.4 `stageCompletion`
 
-Yakıt maliyeti runtime'da hesaplanmalıdır. Excel'den gelen statik yakıt toplamları kanonik kaynak kabul edilmemelidir.
-
-## 5.3 `tripPlan`
-
-Kullanıcının oluşturduğu gerçek plan nesnesi.
-
-### TripPlan alanları
+### Temel alanlar
 
 - `id`
 - `userId`
-- `routeId`
-- `vehicleProfileId`
-- `budgetScenarioId`
-- `name`
-- `status`
-- `startDate` nullable
-- `selectedStageCount`
-- `selectedSideQuestCount`
-- `plannedDistanceKm`
-- `plannedDriveMinutes` nullable
-- `plannedTotalCostTl` nullable
-
-### Status değerleri
-
-- `draft`
-- `active`
-- `completed`
-- `archived`
-
-## 5.4 `tripSelection`
-
-TripPlan içindeki stage ve side quest seçimlerini tutan ara nesne.
-
-### TripSelection alanları
-
-- `id`
-- `tripPlanId`
-- `entityType`
+- `routeSessionId`
+- `entityType` = `stage` | `sideQuest`
 - `entityId`
-- `selectionOrder`
-- `isOptional`
-- `isIncluded`
-
-### EntityType değerleri
-
-- `stage`
-- `sideQuest`
-
-## 5.5 `stageCompletion`
-
-Tamamlama ve ilerleme kaydı.
-
-### StageCompletion alanları
-
-- `id`
-- `userId`
-- `tripPlanId` nullable
-- `entityType`
-- `entityId`
-- `status`
-- `completedAt` nullable
-- `completionSource`
+- `completionSource` = `manual`
+- `completedAt`
 - `notes` nullable
 
-### CompletionSource değerleri
+### Notlar
 
-- `manual`
-- `gps`
-- `import`
+- route-level completion butonu, secili stage'ler varsa onlar; yoksa route'un gerekli stage'leri tamamlandiginda ve kullanici onay verdiginde `routeSession.status = completed` gecisini tetikler
 
-## 5.6 `achievementProgress`
+## 7. V1 Davranis Kararlari
 
-Kullanıcının kazandığı başarımları tutar.
+- `routeSession`, `tripPlan`'in yerini alir
+- route warnings canli hava sorgusu kullanmaz
+- review manuel checklist'tir
+- advisory warning, yasak koymaz
+- sideQuest planning baglayici degildir; kullanici acik session icinde fikrini degistirebilir
 
-### AchievementProgress alanları
+## 8. V1 Core vs Deferred
 
-- `id`
-- `userId`
-- `achievementDefinitionId`
-- `awardedAt`
-- `sourceEntityType`
-- `sourceEntityId`
+### V1 core
 
-## 5.7 `xpLedger`
+- route: `name`, `family`, `summary`, `originLabel`, `destinationLabel`, `status`, `sortOrder`
+- stage: `sequenceIndex`, `title`, `originLabel`, `destinationLabel`, `summary`, `distanceKm`, `hazardProfileId`
+- sideQuest: `hostStageId`, `orderIndex`, `name`, `type`, `stopStyle`, `summary`, `distanceKm`, `latitude`, `longitude`, `hazardProfileId`
+- hazardProfile: tum statik risk ve kosul hassasiyeti alanlari
+- vehicleProfile: tum 6 zorunlu alan
+- routeSession: `routeId`, `vehicleProfileId`, `status`, `selectedStageIds`, `plannedSideQuestIds`
+- stageCompletion: `entityType`, `entityId`, `completedAt`
 
-XP kazanımlarının izlenebilir olması için ledger mantığı önerilir.
+### Deferred / nice-to-have
 
-### XpLedger alanları
+- `mediaAsset`
+- `dayNumber`, `dayLabel`
+- `estimatedDriveMinutes`
+- `primaryVisitName`, `primaryVisitSummary`
+- `lodgingOptions`, `foodOptions`
+- detayli `routeStats`
+- kalici `routeWarningSummary`
 
-- `id`
-- `userId`
-- `amount`
-- `reasonType`
-- `reasonEntityType`
-- `reasonEntityId`
-- `createdAt`
+## 9. Publish Icin Minimum Veri
 
-## 6. Enum ve Sözlükler
+Bir route publish edilmeden once en az su bilesenler hazir olmalidir:
 
-## 6.1 Quest tag sözlüğü
-
-Sembol değil, kod saklanmalıdır.
-
-- `drive`
-- `scenic`
-- `history`
-- `gastronomy`
-- `wine`
-- `coast`
-- `elite`
-- `nature`
-
-`drone` V0 kapsamı dışındadır.
-
-## 6.2 Route family sözlüğü
-
-- `main`
-- `bypass`
-- `connector`
-
-## 6.3 Status sözlüğü
-
-İçerik nesneleri için başlangıçta yeterli ortak status seti:
-
-- `draft`
-- `active`
-- `archived`
-
-## 7. Excel Kaynağından Kanonik Modele Dönüşüm
-
-Excel, kanonik kaynak değil; import kaynağıdır.
-
-## 7.1 Satır tipleri
-
-Import hattı her satırı önce şu tiplere ayırmalıdır:
-
-- `sectionHeader`
-- `columnHeader`
-- `routeStage`
-- `sideQuest`
-- `connectorStage`
-- `bypassStage`
-- `empty`
-
-Header satırları uygulama verisine dönüşmemelidir.
-
-## 7.2 Kolon eşlemesi
-
-### A sütunu: `Gün`
-
-- sayı ise `dayNumber`
-- `X`, `Y` gibi işaret ise `dayLabel`
-- section/header ise veri dışı
-
-### B sütunu: `Rota--Etap`
-
-- ana route stage ise `route.code` + `stage.code`
-- side quest alanında host stage referansına dönüşür
-- connector veya bypass kodları ilgili route ailesine göre normalize edilir
-
-### C sütunu: `KM`
-
-- `distanceKm`
-
-### D sütunu: `Konaklama`
-
-- `lodgingOptions.eco`
-- `lodgingOptions.mid`
-- `lodgingOptions.luxury`
-
-### E sütunu: `Yakıt -- Yol (TL)`
-
-Bu sütun ikiye ayrılmalıdır:
-
-- statik yakıt tahmini varsa import edilir ama `authoritative = false` kabul edilir
-- sabit yol, köprü, sınır, feribot gibi ücret varsa `fixedRouteFeeTl` ve `fixedRouteFeeNote` alanına taşınır
-
-Kanonik bütçe motoru için asıl kaynak bu sütun olmamalıdır.
-
-### F sütunu: `Gastronomi`
-
-- `foodOptions.option1`
-- `foodOptions.option2`
-- `foodOptions.option3`
-
-### G sütunu: `Quest`
-
-- semboller enum kodlarına çevrilir
-- saklanan değer dizi olmalıdır
-
-### H sütunu: `Zorluk -- Manzara`
-
-- `difficultyScore`
-- `sceneryScore`
-
-### I sütunu: `Detour`
-
-- `detourAnchorName`
-- `detourKm`
-
-### J sütunu: `Ziyaret Noktası -- Quest Detayı`
-
-Mümkünse şu iki alana ayrılır:
-
-- `primaryVisitName`
-- `primaryVisitSummary`
-
-Ayraç güvenilmezse tüm değer önce `primaryVisitSummary` olarak tutulur, editöryal ayrıştırma sonra yapılır.
-
-### K sütunu: `Başarım`
-
-- `achievementDefinition.title`
-
-## 7.3 Import sonrası zorunlu normalizasyonlar
-
-- sheet isimlerindeki trailing space temizlenmeli
-- ikon ve emoji değerleri enum'a çevrilmeli
-- tekrar eden achievement başlıkları birleştirilmeli
-- stage kodları standart biçime getirilmeli
-- side quest host ilişkileri doğrulanmalı
-- connector ve bypass route ayrımı açık biçimde işaretlenmeli
-
-## 8. Alan Tipi ve Validation Kuralları
-
-## 8.1 Ortak kurallar
-
-- tüm `id` alanları stabil ve insan editine kapalı olmalıdır
-- tüm `code` alanları editöryal görünür kimliktir
-- `slug` alanları URL ve mobil deep link dostu olmalıdır
-
-## 8.2 Route validation
-
-- `family` zorunludur
-- `name` zorunludur
-- `plannedStageCount >= 1`
-- `plannedDistanceKm > 0`
-
-## 8.3 Stage validation
-
-- her stage bir route'a bağlı olmalıdır
-- `sequenceIndex` route içinde benzersiz olmalıdır
-- `distanceKm > 0`
-- `difficultyScore` 1 ile 5 arasında olmalıdır
-- `sceneryScore` 1 ile 10 arasında olmalıdır
-- `questTags` boş olabilir ama null olmamalıdır
-
-## 8.4 Side quest validation
-
-- her side quest bir `hostStageId` taşımalıdır
-- `detourKm >= distanceKm` olmak zorunda değildir; çünkü bir side quest toplam ekstra sapmayı ifade edebilir
-- `distanceKm > 0`
-
-## 8.5 Achievement validation
-
-- `title` zorunludur
-- `scope` zorunludur
-- `xpReward >= 0`
-
-## 9. Modelin Bilinçli Ayrımları
-
-Bu v0 modelinde bilinçli olarak şu ayrımlar yapılmıştır:
-
-### `route` ile `sideQuest` ayrıdır
-
-Çünkü side quest, rota kataloğunda ana omurga gibi davranmaz; host stage'e bağlıdır.
-
-### `hazardProfile` ile `vehicleWarning` ayrıdır
-
-İçerik aynı kalırken araç bazlı uyarı değişebilir.
-
-### `fixedRouteFeeTl` ile yakıt maliyeti ayrıdır
-
-Yakıt dinamik hesaplanır; köprü, feribot, sınır veya sabit yol masrafı ise içerik tarafında tutulabilir.
-
-### `sequenceIndex` ile `dayNumber` ayrıdır
-
-Ham kaynakta her etap gerçek gün numarası taşımıyor. Sıralama ile takvim aynı şey değildir.
-
-## 10. Örnek Kanonik Temsil
-
-```json
-{
-  "route": {
-    "id": "route:r01",
-    "code": "R01",
-    "name": "Rota 01",
-    "family": "main",
-    "plannedDayCount": 37,
-    "plannedDistanceKm": 7300,
-    "isCrossBorder": false
-  },
-  "stage": {
-    "id": "stage:r01:01-03",
-    "routeId": "route:r01",
-    "code": "01-03",
-    "sequenceIndex": 9,
-    "dayNumber": 9,
-    "distanceKm": 210,
-    "difficultyScore": 3,
-    "sceneryScore": 9,
-    "questTags": ["drive", "coast", "wine"],
-    "detourAnchorName": "Balıkaşıran",
-    "detourKm": 15
-  },
-  "sideQuest": {
-    "id": "sq:r04:d01:belgrad-ormani",
-    "hostStageId": "stage:r04:04-01",
-    "distanceKm": 35,
-    "questTags": ["drive", "nature"]
-  }
-}
-```
-
-## 11. Teknik Faz İçin Sonraki Adım
-
-Bu modelden sonra üretilecek doğru belge:
-
-`Application Architecture v0`
-
-Bu belgede artık şu kararlar verilebilir:
-
-- PostgreSQL / PostGIS gerekip gerekmediği
-- GeoJSON saklama yaklaşımı
-- Node.js servis sınırları
-- React Native ekran veri kontratları
-- admin/import paneli ihtiyacı
-- AI destekli içerik işleme noktaları
-
-## 12. Sonuç
-
-Rotablo'nun veri omurgası, Excel satırlarının birebir kopyası olmamalıdır. Doğru yaklaşım:
-
-- rotayı ayrı,
-- stage'i ayrı,
-- side quest'i ayrı,
-- risk trait'ini ayrı,
-- kullanıcı planını ayrı,
-- tamamlama ve oyunlaştırmayı ayrı
-
-modellemektir.
-
-Bu ayrım doğru yapılırsa, hem MVP hızlı çıkar hem de sistem daha sonra karmaşıklaşmadan büyüyebilir.
+- route name, summary, family, origin, destination
+- en az bir stage
+- her stage icin title, origin, destination, summary, distance ve hazard profile
+- sideQuest varsa host stage, orderIndex, type, summary, koordinat ve hazard profile
+- route status = `published`

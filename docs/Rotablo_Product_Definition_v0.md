@@ -1,320 +1,246 @@
 # Rotablo Product Definition v0
 
-## 1. Ürün Özeti
+**Durum:** Guncel planlama tanimi  
+**Tarih:** 2026-04-12
 
-Rotablo, otomobil tutkunları için tasarlanmış küratörlü bir sürüş ve rota keşif platformudur. Standart navigasyon ürünlerinin "en hızlı varış" mantığı yerine, sürüş keyfi yüksek asfalt yolları, teknik virajları, manzara kalitesi yüksek etapları ve rota üzerindeki kültürel deneyimleri merkeze alır.
+## 1. Urun Ozeti
 
-Ürünün temel vaadi şudur:
+Rotablo, otomobil tutkunlari icin tasarlanmis kuratorlu bir rota yayinlama platformu ve pasif driving companion urunudur.
 
-**"Seni A noktasından B noktasına en kısa sürede değil, en iyi sürüş deneyimiyle götüren rota ekosistemi."**
+V1'de:
 
-Rotablo sadece rota listesi sunan bir içerik ürünü değildir. Kullanıcının araç profiline, bütçesine, zamanına ve sürüş iştahına göre rota planlamasını destekleyen; etap tamamlama, başarımlar ve sürücü ilerlemesi ile oyunlaştırılmış bir deneyim katmanı kuran bir `driving companion` ürünüdür.
+- Rotablo ekibi route author olarak icerik uretir
+- kullanici yayinlanmis rotalari kesfeder
+- kullanici arac profilini secer
+- kullanici route icin bir `routeSession` baslatir ve gerekiyorsa sonra devam eder
+- sistem statik rota uyarilari ve arac uyumlulugu uretir
 
-## 2. Problem Tanımı
+V1'de Rotablo:
 
-Bugünkü harita ve navigasyon uygulamaları şu ihtiyaçları karşılamıyor:
+- serbest rota olusturucu degildir
+- turn-by-turn navigator degildir
+- live weather urunu degildir
+- background GPS veya live-tracking urunu degildir
 
-- Sürüş tutkunu kullanıcı için yolun kendisini bir deneyim olarak ele almıyorlar.
-- Teknik asfalt kalitesi, viraj ritmi, manzara değeri ve otomobil odaklı rota kürasyonu sunmuyorlar.
-- Yol üzerindeki kültür, gastronomi, sahil, doğa ve ekstrem etapları tek bir sistemde birleştirmiyorlar.
-- Kullanıcının aracına göre risk, uygunluk ve hazırlık uyarıları üretmiyorlar.
-- Roadtrip planlamasını oyunlaştırılmış bir ilerleme sistemine bağlamıyorlar.
+## 2. Problem
 
-Rotablo bu boşluğu, insan eliyle tasarlanmış rota omurgaları ve bunların çevresine kurulmuş etap, side quest ve bağlantı sistemiyle doldurur.
+Mevcut harita ve navigasyon urunleri:
 
-## 3. Vizyon
+- surus deneyimini urunun merkezi olarak ele almiyor
+- arac tipine gore aciklanabilir zorluk bilgisi sunmuyor
+- rota kurasyonu yapan ekipler icin tekrar uretilebilir bir authoring sistemi vermiyor
 
-Rotablo'nun uzun vadeli vizyonu, otomobil severler için "açık dünya sürüş RPG'si" hissi veren en güçlü rota ekosistemi olmaktır.
+Rotablo bu boslugu editorial publishing + passive companion modeliyle kapatir.
 
-Bu vizyonda kullanıcı:
+## 3. Urun Ilkeleri
 
-- bir ana rotaya girer,
-- yol üstünde yan görevler açar,
-- araç profiline göre riskleri görür,
-- sürüş stiliyle uyumlu etapları seçer,
-- başarımlar kazanır,
-- zaman içinde kendi sürücü kimliğini inşa eder.
+1. Yol sadece ulasim degil, deneyimdir.
+2. V1'de rota yazari sizsiniz; kullanici yayinlanmis rotayi tuketir.
+3. Uyarilar deterministic ve aciklanabilir olmalidir.
+4. Sistem kullanici adina "gitme / yapma" karari vermez.
+5. Sistem bugunun hava durumunu degil, rotanin hangi kosullarda zorlasacagini anlatir.
+6. Teknik yigin urun gercegine hizmet etmelidir.
+7. Excel yardimci olabilir, urunun anlama modeli degildir.
 
-## 4. Ürün İlkeleri
+## 4. Ana Roller
 
-Rotablo ürün kararları şu ilkelere göre verilmelidir:
+### Admin / Editor
 
-1. Yol sadece ulaşım değil, deneyimdir.
-2. Otoyol optimizasyonu değil, sürüş kalitesi optimizasyonu esastır.
-3. İçerik algoritmadan önce kürasyonla başlar.
-4. Etaplar açıklanabilir metadata ile sunulmalıdır.
-5. Oyunlaştırma, deneyimi güçlendirmeli; ciddiyeti ve güvenliği zayıflatmamalıdır.
-6. Araç uyumu ve yol riski, içerik sunumunun asli parçasıdır.
+- route draft olusturur
+- stage ve sideQuest tanimlar
+- hazard trait'lerini belirler
+- rota uyarilarini preview eder
+- route'u publish eder, revize eder
 
-## 5. Hedef Kullanıcı
+### Public User
 
-### Birincil kullanıcı
+- yayinlanmis rotalari kesfeder
+- arac profilini olusturur veya secer
+- route detaylarini inceler
+- routeSession baslatir veya devam eder
+- yol karakteri, kosul hassasiyeti ve arac uyumlulugu temelli advisory warnings gorur
+- completion kayitlarini manuel isler
 
-Otomobil kullanmayı seven, hafta sonu sürüşü veya uzun roadtrip planlayan, "hangi yol daha keyifli?" sorusuna klasik harita ürünlerinden daha iyi cevap arayan kullanıcı.
+## 5. Urun Cekirdegi
 
-Bu profil genelde:
+Rotablo'nun V1 cekirdegi bes parcadan olusur:
 
-- sürüş deneyimine önem verir,
-- yol kalitesini ve viraj karakterini önemser,
-- otomobili sadece araç değil hobi olarak görür,
-- rota üstünde manzara, tarih, gastronomi gibi duraklara değer verir,
-- planlama yapmadan uzun sürüşe çıkmak istemez.
+### 5.1 Editorial Route System
 
-### İkincil kullanıcı
+Admin tarafindan yonetilen:
 
-- Premium otomobil sahipleri
-- Kulüp veya arkadaş grubuyla rota yapan sürücüler
-- İçerik odaklı gezi planlayan ama sürüş kalitesine de önem veren kullanıcılar
-- Türkiye içinde "özel yol" keşfetmek isteyen gezginler
+- `route`
+- `stage`
+- `sideQuest`
+- `hazardProfile`
 
-## 6. Jobs To Be Done
+### 5.2 Public Route Consumption
 
-Kullanıcı Rotablo'yu şu işler için kullanır:
+Kullanici:
 
-- "Bu hafta sonu kısa ama keyifli bir sürüş rotası bulmak istiyorum."
-- "Uzun roadtrip planlıyorum; etap etap ne göreceğimi ve ne kadar harcayacağımı bilmek istiyorum."
-- "Aracıma uygun, sürüş karakteri güçlü yolları seçmek istiyorum."
-- "Ana rotadan çok uzaklaşmadan ekstra keşif yapılabilecek yan etapları görmek istiyorum."
-- "Yaptığım sürüşleri sadece tamamlamak değil, ilerleme hissiyle yaşamak istiyorum."
+- yayinlanmis route'u goruntuler
+- ordered stage list'i inceler
+- sideQuest'leri listede ve statik haritada gorur
+- statik route metadata'yi okur
 
-## 7. Ürün Kapsamının Çekirdeği
+### 5.3 Runtime Route Session
 
-Rotablo'nun çekirdeği üç katmanlı rota mimarisidir:
+Kullanici route ile aktif iliskiyi `routeSession` uzerinden kurar:
 
-### Ana Rotalar
+- `active`
+- `incomplete`
+- `completed`
 
-Başlangıç ve bitişi tanımlı, çok günlü ana omurgalar. Bunlar ürünün "main quest" yapısını oluşturur.
+V1'de save/start icin ayri bir `savedRoute` modeli yoktur. Kullanici route'u bitirmeden ayrilirsa session `incomplete` olur; geri dondugunde yeniden `active` olabilir.
 
-### Bağlantı / Bypass Rotaları
+### 5.4 Deterministic Warning Layer
 
-Ana rotalar arasında geçiş sağlayan veya alternatif omurga sunan hatlar. Bunlar ürünün dünyasını lineer değil ağ yapısında hissettirir.
+Warning sistemi uc veriyi birlestirir:
 
-### Side Quest'ler
+- arac profili
+- stage / sideQuest hazard trait'leri
+- rota kosul hassasiyetleri
 
-Ana omurgadan belirli bir mesafe içinde ayrılıp geri dönülen isteğe bağlı keşif etapları. Bunlar ürünün açık dünya hissini kuran ana bileşendir.
+Bu katman smart engine degildir. Kural tabanlidir.
+
+### 5.5 Companion Layer
 
-## 8. İçerik Modeli
+V1 companion katmani sunlari kapsar:
 
-Her etap için ürün seviyesinde ihtiyaç duyulan çekirdek veri alanları:
+- rota uyarilari
+- arac uyumlulugu
+- manuel completion
+- temel surus takibi hissi
 
-- `routeFamily`: main, bypass, connection, sideQuest
-- `routeCode`: ör. `R01`, `R06`, `BP`
-- `stageCode`: ör. `01--03`
-- `dayNumber`
-- `title`
-- `summary`
-- `distanceKm`
-- `detourKm`
-- `detourAnchor`
-- `difficultyScore` (1-5)
-- `sceneryScore` (1-10)
-- `questTags`
-- `visitPoint`
-- `achievementTitle`
-- `lodgingOptions`
-- `foodOptions`
-- `roadNotes`
-- `vehicleWarnings`
-- `region`
-- `country`
-- `isCrossBorder`
-
-### Sabit quest/category sözlüğü
-
-V0 için aşağıdaki sekiz kategori kanonik kabul edilir:
-
-- `drive`: teknik sürüş
-- `scenic`: manzara
-- `history`: tarih/kültür
-- `gastronomy`: gastronomi
-- `wine`: bağ evi/şarap
-- `coast`: koy/sahil
-- `elite`: ekstrem/elite
-- `nature`: doğa/orman
+## 6. Icerik Yapisi
 
-`drone` kategorisi şimdilik ürün çekirdeğine alınmaz. Gerekirse sonraki versiyonda ek kategori olarak açılır.
+V1'de icerik su mantikla modellenir:
 
-## 9. Temel Ürün Deneyimi
+- `route`: ust seviye yayinlanabilir omurga
+- `stage`: route icindeki sirali ana surus birimi
+- `sideQuest`: bir stage'e bagli opsiyonel kesif sapmasi
+- `hazardProfile`: yol karakteri ve kosul hassasiyeti trait seti
 
-V1'de kullanıcı deneyimi şu akış üzerine kurulmalıdır:
+Net sinirlar:
 
-1. Kullanıcı rota kataloğuna girer.
-2. Ana rota veya kısa rota koleksiyonlarından birini inceler.
-3. Etap detaylarında sürüş karakteri, manzara, quest türleri, detour ve ziyaret noktalarını görür.
-4. Kendi araç profilini seçer veya oluşturur.
-5. Araç profiline göre kritik uyarıları görür.
-6. Bütçe parametrelerini girer ve toplam maliyeti hesaplar.
-7. Side quest ve bağlantıları dahil ederek kişisel planını oluşturur.
-8. Etapları tamamladıkça achievement ve XP kazanır.
+- `sideQuest`, route degildir
+- `stage`, ana guzergahin sabit bacagidir; sideQuest'lerin toplamindan uretilmez
+- `sideQuest`, planlama yardimcisidir; onceden secilse bile baglayici degildir
+- `hazardProfile`, serbest yorum yazisi degil trait setidir
+- `route warnings`, canli hava verisinden degil editorial trait setinden turetilir
 
-Bu akışta "aktif navigasyon" yardımcı olabilir, ancak ürünün çekirdeği rota keşfi, seçim, hazırlık ve tamamlama hissidir.
+## 7. Temel Deneyim
 
-## 10. MVP Tanımı
+### 7.1 Editorial akis
 
-İlk sürüm için ürün kapsamı şu şekilde tutulmalıdır:
+1. Admin route draft olusturur.
+2. Ordered stage list ekler.
+3. SideQuest'leri host stage'lere baglar.
+4. Hazard trait'lerini atar.
+5. Rota uyarilarini preview eder.
+6. Manuel review checklist'ini tamamlar.
+7. Route publish edilir.
 
-### MVP içinde
+### 7.2 Kullanici akis
 
-- Küratörlü rota kataloğu
-- Ana rota detay sayfaları
-- Etap detay ekranı
-- Zorluk ve manzara puanları
-- Quest kategori gösterimi
-- Side quest ve detour gösterimi
-- Araç profili oluşturma
-- Araç bazlı temel uyarılar
-- Bütçe simülatörü
-- Achievement sistemi
-- XP ve sürücü seviye mantığı
-- Rota ve etap tamamlama işaretleme
+1. Kullanici rota kataloguna girer.
+2. Yayinlanmis bir route'u inceler.
+3. Arac profilini secer veya olusturur.
+4. RouteSession baslatir; isterse etap ve sideQuest planini onceden isaretler.
+5. Route detail ekraninda stage listesi, sideQuest listesi ve statik harita uzerinden secenekleri gorur.
+6. Fikrini degistirirse acik session icinde sideQuest planini degistirebilir.
+7. Bir sideQuest marker veya kartindan dis navigasyon uygulamasina gecis yapabilir.
+8. Route warnings ekraninda rotanin hangi kosullarda zorlasacagini gorur.
+9. Aracina ozel uyumluluk uyarilarini gorur.
+10. Completion kayitlarini manuel isler.
 
-### MVP dışında
+## 8. MVP Kapsami
 
-- Tam teşekküllü turn-by-turn navigasyon
-- Gerçek zamanlı trafik optimizasyonu
-- Sosyal ağ / kullanıcılar arası feed
-- UGC rota oluşturma
-- Otomatik AI rota üretimi
-- Gelişmiş telemetri entegrasyonları
-- Canlı hava ve yol durumu skorlarının otomatik etkilenmesi
+### MVP icinde
 
-## 11. Araç Profili ve Uyarı Sistemi
+- admin-first route authoring yapisi
+- draft / publish / unpublish / archive editorial lifecycle
+- yayinlanmis rota katalogu
+- route detail ve ordered stage list
+- sideQuest gosterimi + statik harita marker'lari
+- 6 alanli arac profili
+- `routeSession` start / resume / incomplete modeli
+- dis navigasyon uygulamasina handoff (`Google Maps ile ac`)
+- statik rota uyarilari
+- arac uyumluluk uyarilari
+- basit butce simulasyonu
+- manuel completion
 
-Rotablo'yu standart rota içeriğinden ayıran güçlü özelliklerden biri araç uyumluluğudur.
+### MVP disinda
 
-V1 için araç profili en az şu alanları desteklemelidir:
+- serbest kullanici rota olusturma
+- turn-by-turn navigation
+- GPS tracking
+- live weather sorgusu
+- background weather polling
+- gercek zamanli trafik
+- AI rota uretimi
+- sosyal ozellikler
+- agir offline-first sync motoru
 
-- marka
-- model
-- gövde tipi
-- çekiş tipi
-- yerden yükseklik segmenti
-- lastik tipi / mevsim tipi
-- performans karakteri
+## 9. Arac Profili ve Uyari Sistemi
 
-Bu profil üzerinden temel uyarılar üretilir:
+V1 arac profili alanlari:
 
-- düşük karoser / alt takım riski
-- yüksek rakım / soğuk zemin / tutuş riski
-- ekstrem etap uygunluğu
-- uzun etap yorgunluğu veya sürüş yoğunluğu uyarısı
+1. marka
+2. model
+3. govde tipi
+4. cekis tipi
+5. yerden yukseklik sinifi
+6. lastik mevsimi
 
-Bu uyarı motoru öneri verir; kullanıcı adına karar vermez.
+Ornek advisory mantik:
 
-## 12. Bütçe Simülatörü
+- dusuk clearance + rough surface = alt takim riski
+- yuksek hairpin density + steep grade = yorucu surus
+- rain-sensitive route + yaz lastigi = kotu kosullarda dikkat seviyesi artar
+- high altitude + snow-sensitive sections = kis kosullarinda zorluk artar
 
-Planlama katmanının merkezinde dinamik bütçe hesabı yer almalıdır.
+Sistem "bu rota yapilamaz" demez. "Risk artabilir" der.
 
-V1'de kullanıcı şu parametreleri değiştirebilmelidir:
+## 10. Rota Uyarilari Sistemi
 
-- yakıt litre fiyatı
-- araç tüketimi
-- konaklama segmenti
-- günlük yemek bütçesi
+V1 rota uyarilari canli hava sorgusuna dayanmaz.
 
-Temel mantık:
+Bunun yerine sistem:
 
-`yakıt + konaklama + yemek = toplam plan maliyeti`
+- rotanin yol karakterini anlatir
+- hangi kosullarda zorlasacagini soyler
+- yayla, dar yol, rough surface, viraj, egim, sis, kar gibi hassasiyetleri standardize kartlara cevirir
 
-Bu hesap:
+Ornek advisory dili:
 
-- rota seviyesinde,
-- seçilen etaplar seviyesinde,
-- side quest dahil / hariç senaryosunda
+- "Yayla bolumlerinde sisli havalarda gorus zorlasabilir."
+- "Bu rotada virajli ve egimli bolumler yagisli havalarda daha dikkatli surus gerektirebilir."
+- "Yer yer rough surface ve dar yol karakteri bulunur."
 
-yeniden üretilebilmelidir.
+## 11. Stage ve SideQuest Etkilesimi
 
-## 13. Oyunlaştırma Sistemi
+V1'de kullanici serbest rota planlayicisi kullanmaz. Bunun yerine:
 
-Gamification, Rotablo'da kozmetik bir ek değil, kullanıcı motivasyonunu güçlendiren ürün katmanıdır.
+- route icindeki stage'leri gorur
+- stage altindaki sideQuest'leri listede ve haritada gorur
+- isterse sideQuest'leri onceden planlar
+- isterse yoldayken fikrini degistirir
+- planlamadigi bir sideQuest'i yine acabilir veya tamamlayabilir
 
-V1 için yeterli çekirdek:
+SideQuest secimi, route'u yeniden tasarlamak degil, yayinlanmis route icindeki opsiyonlari kullanmaktir.
 
-- etap bazlı achievement
-- rota tamamlama başarımı
-- XP kazanımı
-- sürücü seviyesi
-- tamamlanan quest sayısı
+## 12. Butce Simulasyonu
 
-Gamification tonu önemli bir ürüne benzemeli; çocuklaşmamalı. Duygu, "driving prestige + progression" olmalıdır.
+Butce modulu estimate uretir; muhasebe dogrulugu iddiasi tasimaz.
 
-## 14. Konumlandırma
+## 13. Progression
 
-Rotablo'nun kısa konumlandırma cümlesi:
+Progression Rotablo icin onemlidir ama V1'in merkezi degildir.
 
-**Rotablo, sürüş tutkunu kullanıcılar için tasarlanmış, küratörlü yol deneyimlerini rota planlama ve oyunlaştırma ile birleştiren mobil platformdur.**
+V1'de completion ve ilerleme hissi once gelir. XP ve achievement ancak editorial system, routeSession ve warning kalitesini bloklamiyorsa devreye girer.
 
-Rakip değil ama kıyas ekseni olarak kullanıcı zihninde:
+## 14. Icerik ve Veri Gercekligi
 
-- Google Maps kadar yaygın değil,
-- Waze kadar trafik odaklı değil,
-- klasik gezi blogları kadar pasif değil,
-- driving game kadar soyut değil.
-
-Rotablo bunların arasında "gerçek dünya sürüş RPG planner" alanını hedefler.
-
-## 15. Başarı Metrikleri
-
-İlk sürüm için anlamlı ürün metrikleri:
-
-- rota detay görüntüleme oranı
-- rota planı oluşturma oranı
-- bütçe simülasyonu kullanım oranı
-- araç profili tamamlama oranı
-- ilk achievement kazanma oranı
-- ilk rota veya etap tamamlama oranı
-- side quest ekleme oranı
-
-North star mantığı için aday metrik:
-
-**Planlanan ve tamamlanan sürüş deneyimi sayısı**
-
-## 16. İçerik ve Veri Gerçekliği
-
-Mevcut Excel veri seti çok değerlidir, ancak doğrudan uygulama verisi olarak kullanıma hazır değildir. Ürün açısından ilk içerik işi:
-
-- rota türlerinin standardizasyonu
-- etap kimliklerinin temizlenmesi
-- quest sembollerinin enum'a çevrilmesi
-- section/header satırlarının veri satırlarından ayrılması
-- side quest ve bypass mantığının net ilişki modeliyle tanımlanması
-- Türkiye ve sınır ötesi içeriklerin aynı çatı altında normalize edilmesi
-
-Bu nedenle içerik import süreci, teknik iş değil doğrudan ürün işidir.
-
-## 17. Fazlama Önerisi
-
-### Faz 1
-
-Küratörlü rota keşfi ve planlama
-
-### Faz 2
-
-Araç profili tabanlı akıllı uyarılar ve daha güçlü kişiselleştirme
-
-### Faz 3
-
-İleri oyunlaştırma, koleksiyon, sezonlar veya özel challenge yapıları
-
-### Faz 4
-
-Canlı sürüş companion özellikleri ve daha derin akıllı rota katmanı
-
-## 18. Açık Kararlar
-
-Teknik mimariye geçmeden önce netleştirilmesi gereken ürün kararları:
-
-1. V1'in ana kimliği "rota planner" mı olacak, yoksa "aktif sürüş companion" mı?
-2. Kullanıcı rotayı etap etap mı planlayacak, yoksa hazır quest paketi mi seçecek?
-3. Tamamlama manuel mi işaretlenecek, yoksa konum/veri tabanlı doğrulama gelecek mi?
-4. Araç profili ne kadar detaylı başlayacak?
-5. Gürcü DLC gibi sınır ötesi içerikler V1'de olacak mı, yoksa Türkiye içi çekirdekle mi başlanacak?
-6. Achievement ve XP dengesi ne kadar simülasyonist, ne kadar basit olacak?
-
-## 19. Sonuç
-
-Rotablo'nun ilk sürümü, tam navigasyon ürünü olmaya çalışmamalıdır. En doğru başlangıç, yüksek kalite küratörlü rota içeriğini; planlama, araç farkındalığı ve oyunlaştırma ile birleştiren net bir mobil deneyim oluşturmaktır.
-
-Başka bir deyişle:
-
-**V1'in görevi yolu üretmek değil, doğru yolu seçmeyi ve yaşamayı unutulmaz hale getirmektir.**
+Excel veri seti yardimci referanstir. Urunun ana surucusu degildir.

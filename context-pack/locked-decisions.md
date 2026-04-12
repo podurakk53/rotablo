@@ -1,9 +1,20 @@
-# Kilit Kararlar Kılavuzu (V1 Locked Decisions)
+# Rotablo Locked Decisions Quick Context
 
-## STRICT RULE FOR AI AGENTS:
-Eğer geliştireceğiniz veya yazacağınız kod aşağıdakilerden birini içeriyorsa "HATA (HALÜSİNASYON)" demektir, yazmayın ve onay isteyin:
-- **Aktif GPS Takibi & Background Location:** (YALNIZCA MOCK / YEDEK GEOFENCE, canli gps navigation yok) -> Tamamlama (Completion) işlemi sadece **MANUAL** bir onaya (veya pseudo-queue) tabidir.
-- **Offline DB Engine (WatermelonDB vd.):** V1'de karmaşık lokal sync veritabanı yok; bunun yerine offline liste izleme ve `MMKV + Zustand` üzerinden pending queue kullanılmaktadır.
-- **Microservices Mimari:** Frontend ve Single Fastify API var. Dağıtık bir Mimari Yok!
+Use `../docs/Rotablo_V1_Locked_Decisions.md` as the canonical source.
 
-Tüm detaylı onaylı kararlar için `../docs/Rotablo_Application_Architecture_v0.md` dosyasına bakınız.
+## Quick Summary
+
+- V1 identity: editorial route publishing platform + passive companion
+- Routes are team-authored, not user-built
+- Route use is routeSession-based
+- SideQuest planning is optional and non-binding
+- Warnings are static, route-defined, and deterministic
+- Build path is Supabase-first
+- Cost discipline is free-first and single-project-first
+- GPS/background tracking is out of V1
+
+## Anti-Drift Notes
+
+- Do not treat the Fastify + Prisma scaffold as canonical.
+- Do not reintroduce MMKV/Zustand queue assumptions into planning docs.
+- Do not model V1 around `tripPlan`.

@@ -3,6 +3,8 @@
 **Versiyon**: 1.0  
 **Tarih**: 2026-04-09
 
+> Status note (2026-04-12): Bu doküman tarihsel maliyet keşfidir. Güncel teknik yön için `Rotablo_Application_Architecture_v0.md` dosyasını esas alın. Özellikle Supabase-first yön, admin-first yapı ve custom backend'i erteleme kararı burada geçen bazı eski varsayımları geçersiz kılar.
+
 ## 1. Masraf Kalemleri Detaylı Analiz
 
 ### 1.1 Backend Hosting: Railway ($5-20/month)

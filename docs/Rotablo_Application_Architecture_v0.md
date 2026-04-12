@@ -1,104 +1,124 @@
 # Rotablo Application Architecture v0
 
-**Versiyon**: 3.0 (Konsolide Mimari)
-**Tarih**: 2026-04-09 
+**Durum:** Guncel hedef mimari  
+**Tarih:** 2026-04-12
 
-## 1. Amaç ve Mimari Prensipler
+## 1. Amac
 
-Bu doküman, Rotablo'nun ürün tanımlarını (`Product Definition v0`) ve kilitlenmiş MVP kararlarını (`V1 Locked Decisions`) hayata geçirecek net teknik altyapıyı belirler. Geçmiş mimari taslaklarında yer alan ve V1 kilitli kararlarıyla (Örn: GPS takip yok, tamamlama manuel) çelişen "Over-Engineering" (WatermelonDB, Background Location, Geofencing) kavramları ayıklanmış, gerçekçi bir MVP + Ölçeklenme haritası çıkarılmıştır.
+Bu dokuman, Rotablo V1'i iki non-coder kurucunun AI yardimiyla gercekci bicimde insa edebilecegi en sade teknik yonu tanimlar.
 
-**Ana Prensipler:**
-- **Offline-Tolerant (Offline-First değil):** V1 için karmaşık WatermelonDB senkronizasyonu yerine, MMKV + Zustand ile salt okunur katalog önbelleği (Cache) ve pending completion kuyruğu kullanılacaktır.
-- **REST API Önceliği:** V1 ihtiyaçları dikey sorgular barındırmadığı için GraphQL veya tRPC yerine RESTful API seçilmiştir.
-- **Micro-Tasks Mimari:** Hem mobil hem backend, domain-driven (özellik bazlı) klasör yapılarına oturtulmuştur.
+Temel sira:
 
----
+1. editorial system
+2. public route browsing
+3. routeSession flow
+4. static route warnings
+5. completion ve butce
 
-## 2. Teknoloji Yığını (Tech Stack)
+## 2. Mimari Ilkeler
 
-| Katman | Teknoloji / Araç | Gerekçe / MVP Kararı |
+1. Platform basitligi, teknik gosteristen daha onemlidir.
+2. Editorial authoring, public app kadar kritiktir.
+3. V1'de tek buyuk custom backend zorunlu degildir.
+4. Warning logic canli provider bagimliligina dayanmak zorunda degildir.
+5. GPS, background jobs ve agir sync motorlari V1 disinda tutulur.
+6. Mevcut repo kodu yon gosterebilir ama mimariyi baglamaz.
+
+## 3. Onerilen Yigin
+
+| Katman | Onerilen cozum | Neden |
 |---|---|---|
-| **Veritabanı** | PostgreSQL (+ PostGIS) | Supabase Managed DB. Güçlü ilişkisel bütünlük ve coğrafi arama. |
-| **Backend API** | Node.js (Fastify) + Prisma ORM | Tipten tipe güvenlik, mikro saniye düzeyinde performans ve kolay RDBMS yönetimi. |
-| **Mobile Client** | React Native (Expo EAS) | Tek kod tabanında iki platforma derleme, hızlı build (EAS) süreci. |
-| **Harita** | Mapbox GL | Küratörlü yollar için "premium" ve karanlık tema tabanlı custom tile desteği. |
-| **State & Cache** | Zustand + React Query + MMKV | Redux'ın hantallığından uzak, performanslı local cache mekanizması (WatermelonDB V2'de değerlendirilecek). |
-| **Auth** | Supabase Auth (JWT) | Fastify backend'i JWT doğrulayarak sistemi işletecek. |
-| **Hosting** | Railway | Backend API için zero-config, uygun maliyetli ölçeklenebilir platform. |
+| Mobile app | Expo React Native | Tek kod tabani, hizli iterasyon |
+| Admin girisi | Supabase Studio | En dusuk operasyonel yuk ile ilk data entry |
+| Admin web | Next.js (gerektiginde) | Studio yetmediginde ozel authoring UI |
+| DB / Auth / Storage | Supabase | Tek platform, dusuk operasyonel karmasa |
+| Warning logic | Shared TypeScript / app logic | Dis provider ve edge bagimliligini azaltir |
+| Deployment | Supabase + Vercel + Expo EAS | Basit ve yaygin arac seti |
 
----
+## 4. Neden Custom Backend-First Degil
 
-## 3. Sistem Mimarisi & Bileşenler
+Repo icinde bir Fastify + Prisma scaffold bulunuyor. Ancak V1 icin bunun ana yon olmasi onerilmez.
+
+Sebep:
+
+- iki non-coder kurucu icin operasyonel yuk artar
+- auth, db, hosting ve API ayri ayri dusunulmek zorunda kalir
+- urunun asil zorlugu backend degil, editorial system + data discipline'dir
+
+## 5. Sistem Bilesenleri
 
 ```text
-[ Mobile App (Zustand + MMKV Cache) ]
-           |
-       REST API (JWT Auth)
-           |
-[ Node.js Fastify Backend (Prisma ORM) ]
-           |
-[ Supabase PostgreSQL DB ]
+[ Admins ]
+    |
+    |  Supabase Studio / Admin Web
+    v
+[ Supabase DB + Auth + Storage ]
+    |
+    +----> Public / Mobile Client
+             |
+             +----> Static warning / compatibility rules
 ```
 
-### 3.1. Frontend (Mobile) Katmanı Detayı
+## 6. Ana Akislar
 
-**Mimari Yaklaşım**: Feature-based folder structure
+### 6.1 Editorial Route Authoring
 
-```text
-mobile/
-├── src/
-│   ├── features/
-│   │   ├── auth/          (Login/Register)
-│   │   ├── routes/        (Katalog)
-│   │   ├── trips/         (Trip planner, bütçe widget'ları)
-│   │   └── vehicles/      (Araç profili - 6 alanlı)
-│   ├── shared/
-│   │   ├── components/    (Ortak UI, kartlar)
-│   │   └── store/         (Zustand & MMKV entegrasyonu)
-│   ├── navigation/        (Native Stack)
-│   └── services/          (Axios interceptor, API calls)
-```
+1. Admin route draft olusturur
+2. Stage'leri girer ve siralar
+3. SideQuest'leri baglar
+4. Hazard trait'lerini atar
+5. Route warning preview'u gorur
+6. Admin/Owner publish eder
 
-### 3.2. Offline ve State Yönetimi (V1)
+### 6.2 Public Route Consumption
 
-**Ne Çalışır?** Planlanmış rotanın etaplarını görüntüleme ve manuel olan "Etap Tamamlandı" butonuna basma.
-**Nasıl Çalışır?** 
-1. İnternet yoksa `StageCompletion` action'ı Zustand içinde `pending_sync_queue` listesine yazılır.
-2. İnternet geldiğinde `POST /api/completions/sync` endpointine kuyruk gönderilir.
-3. Kapsamlı senkronizasyon (WatermelonDB) motoru MVP (V1) hızını kesmemek adına kurulmaz.
+1. Kullanici yayinlanmis route'lari listeler
+2. Route detail'i acar
+3. Arac profilini olusturur veya secer
+4. RouteSession baslatir veya mevcut incomplete session'a devam eder
+5. Stage ve sideQuest'leri listede ve statik haritada gorur
+6. Gerektiginde sideQuest marker'indan dis navigasyon uygulamasina gecer
+7. `routeSession` uzerinden warning ve completion akisina girer
 
----
+### 6.3 Static Warning Evaluation
 
-## 4. API Endpoints (Core Draft)
+1. Kullanici route detail veya routeSession ekranini acar
+2. App, route/stage/sideQuest hazard trait'lerini toplar
+3. Genel rota uyarilarini uretir
+4. Secili vehicle profile varsa uyumluluk uyarilarini uretir
+5. Advisory warnings client'ta gosterilir
 
-*Detaylı sözleşmeler postman/swagger üzerinden şekillenecektir. Genel gruplar:*
+## 7. Validation Stratejisi
 
-- **Public Content:** `GET /api/v1/catalog/routes`, `GET /api/v1/catalog/stages`
-- **User Actions:** `POST /api/v1/vehicles`, `POST /api/v1/trips`
-- **Gamification:** `POST /api/v1/gamification/complete`, `GET /api/v1/gamification/xp`
+Ilk yol:
 
----
+- basit shape/range kurallari DB constraint olarak
+- publish checklist ve warning derivation app/service logic'te
+- DB trigger'lari ancak gercek ihtiyac olusursa sonraya
 
-## 5. Deployment ve Maliyet (V1 Launch)
+## 8. Studio First Siniri
 
-MVP için izlenecek altyapı:
+Supabase Studio ilk icerik girisi icin dogru baslangictir. Ancak veri girisi yavaslamaya baslarsa, publish checklist'i pratik olmaktan cikarsa veya tekrarli editor hatalari artarsa admin web ikinci asama olur.
 
-| Servis | Araç | V1 Maliyet (Tahmini) |
-|---|---|---|
-| **Veritabanı & DB** | Supabase (Pro veya Free) | $0 - $25/ay |
-| **API Hosting** | Railway (Developer) | $5 - $20/ay |
-| **App Builds** | Expo EAS | $0 (Aylık 30 build) |
-| **Harita** | Mapbox | $0 (İlk 50k yükleme) |
-| **Hata Takibi** | Sentry (Team/Free) | $0 - $26/ay |
+## 9. V1'de Bilerek Yapmadiklarimiz
 
-Ortalama MVP Gideri: İlk aylar **$5-$10**, lansman trafiği ile **$60-$100** bandında tutulacaktır.
+- Fastify + Prisma'yi zorunlu ana yol yapmiyoruz
+- GPS tracking yok
+- live weather provider yok
+- background weather polling yok
+- WatermelonDB yok
+- user-generated route builder yok
 
----
+## 10. Maliyet Disiplini
 
-## 6. Sınırlar: V1 ve V2 Ayrımı
+V1 mimarisi teknik olarak mumkun olan en buyuk sistemi degil, en dusuk operasyonel maliyetle calisan ilk sistemi hedefler.
 
-Sistemi karmaşadan korumak için aşağıdaki yetenekler **KESİNLİKLE V1 DIŞIDIR**:
-- **Background Location & Geofencing:** (`expo-location` ile arkaplan takibi ve batarya optimizasyonu).
-- **Ağır Client DB:** (`WatermelonDB`)
-- **Sosyal Ağ Özellikleri:** Puan tabloları, arkadaş ekleme.
-- **Gerçek Zamanlı Senkronizasyon:** WebSockets.
+- ilk pilotta tek Supabase projesi kullanilir
+- erken fazda ayri staging/prod zorunlu tutulmaz
+- Supabase Studio, ozel admin web'den once gelir
+- agir medya storage, live provider ve custom backend ancak ihtiyac kanitlaninca acilir
+- fiyat ve kredi programlari degisebilecegi icin ucretli gecis karari gercek ihtiyac aninda tekrar kontrol edilir
+
+## 11. Genisleme Yolu
+
+Custom backend ancak Supabase fonksiyonlari ciddi sekilde yetersiz kalirsa, warning logic ciddi performans problemi yaratirsa veya audit / performance ihtiyaci bunu zorunlu kilarsa yeniden degerlendirilir.

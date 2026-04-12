@@ -1,80 +1,43 @@
 # Rotablo Project Context
 
-## Communication Style
-- No fluff, no praise, no "great project" comments
-- Direct, rational, and logical approach
-- Critical thinking encouraged - challenge assumptions
-- We're building together, not cheerleading
+This is the short canonical brief for the repo.
 
-## Decision Making
-- NEVER make assumptions
-- ALWAYS ask when information is missing or ambiguous
-- Produce deterministic outputs only - no guessing
-- If multiple interpretations exist, present options and ask
+When documents or code disagree, use the current canonical docs first. The existing codebase still contains exploratory scaffolds from an older architecture direction.
 
-## Workflow Rules
-- DO NOT edit/create files without explicit "yap" / "do it" confirmation
-- Present analysis, opinions, and recommendations first
-- Wait for user approval before making changes
-- Challenge feedback independently - don't auto-accept suggestions
+## Source Of Truth
 
-## Project Status
-- Idea phase only
-- Product definition and data model exist (in docs/)
-- No code, no implementation yet
-- Tech stack decided: React Native, Node.js, TypeScript
+- `docs/Rotablo_Product_Definition_v0.md`
+- `docs/Rotablo_V1_Locked_Decisions.md`
+- `docs/Rotablo_Application_Architecture_v0.md`
+- `docs/Rotablo_Canonical_Data_Model_v0.md`
+- `docs/Rotablo_Terminology_Standard_v1.md`
+- `docs/Rotablo_Editorial_Workflow_v1.md`
+- `docs/Rotablo_Route_Warnings_System_v1.md`
+- `docs/Rotablo_Cost_Minimization_Plan_v1.md`
+- `docs/Rotablo_AI_Execution_Protocol_v1.md`
+- `docs/Rotablo_Implementation_Task_List_v1.md`
+- `context-pack/current-task.md`
 
-## Core Concept
-Rotablo is a curated driving experience platform for car enthusiasts. Not a navigation app - it's a "driving companion" that prioritizes road quality, driving pleasure, and journey experience over fastest routes.
+## Product Core
 
-Key differentiators:
-- Curated routes with quality metadata (difficulty, scenery, road character)
-- Vehicle profile-based warnings and compatibility
-- Gamification (achievements, XP, progression)
-- Budget simulator
-- Side quests and detours
-- Quest categories: drive, scenic, history, gastronomy, wine, coast, elite, nature
+Rotablo is an editorial route publishing platform and passive driving companion.
 
-## Data Architecture
-Three-layer model:
-1. Curated content (routes, stages, side quests, achievements)
-2. Derived system data (calculated scores, recommendations)
-3. User/runtime data (vehicle profiles, trip plans, completions, XP)
+The team creates curated routes. Users discover those routes, choose a vehicle profile, create a `routeSession`, review static advisory warnings, and manually track completion.
 
-Core entities:
-- route (main/bypass/connector)
-- stage (atomic driving unit)
-- sideQuest (optional detours from stages)
-- achievementDefinition
-- hazardProfile (risk traits, not free text warnings)
-- vehicleProfile
-- tripPlan
-- budgetScenario
+## Locked V1 Direction
 
-## MVP Scope
-IN: Route catalog, stage details, vehicle profiles, basic warnings, budget simulator, achievements, XP system, completion tracking
-OUT: Turn-by-turn navigation, real-time traffic, social features, UGC routes, AI route generation
+- Admin-authored routes, not freeform user route building
+- `routeSession` as the only active/incomplete/completed runtime model
+- optional sideQuest planning with static map visibility and external navigation handoff
+- Passive companion, not active GPS navigator
+- Deterministic warnings, not opaque smart AI advice
+- Static route warnings, not live weather tracking
+- Supabase-first architecture, not custom backend-first
+- Free-first and single-project-first cost discipline
+- Turkey-first content scope
 
-## Open Questions
-1. V1 identity: route planner or active driving companion?
-2. Planning UX: stage-by-stage or preset quest packages?
-3. Completion: manual marking or location-based validation?
-4. Vehicle profile detail level for V1?
-5. Cross-border content (Georgia DLC) in V1 or Turkey-only start?
-6. Achievement/XP balance: simulation-heavy or simple?
+## Reality Check
 
-## Content Reality
-Excel data exists but needs normalization:
-- Route type standardization
-- Stage ID cleanup
-- Quest symbols → enum conversion
-- Section/header rows separation
-- Side quest relationship modeling
-- Turkey + cross-border content normalization
-
-Content import is product work, not just technical work.
-
-## Vibecoding Approach
-- Multiple AI models orchestrated
-- You (Kiro) are the orchestrator
-- Iterative refinement expected
+- `backend/` is exploratory and not the canonical architecture direction.
+- `scripts/` is exploratory and Excel is a reference source, not the main product driver.
+- Workspace-level historical docs were moved to `../docs-archive/` to avoid context drift.

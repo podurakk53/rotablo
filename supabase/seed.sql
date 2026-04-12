@@ -1,0 +1,2 @@
+-- Intentionally empty for now.
+-- Rotablo V1 seed data will be added after the first canonical route schema is stable.
