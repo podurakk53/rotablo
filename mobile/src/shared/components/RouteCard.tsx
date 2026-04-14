@@ -1,132 +1,134 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import type { RouteCatalogItem } from '../../features/catalog/catalog.types';
 
 interface RouteCardProps {
-  route: {
-    id: string;
-    code: string;
-    name: string;
-    plannedDistanceKm: number;
-    plannedStageCount: number;
-    heroAssetUrl?: string; // Optional image
-  };
+  route: RouteCatalogItem;
   onPress: () => void;
 }
 
 export const RouteCard: React.FC<RouteCardProps> = ({ route, onPress }) => {
-  // Varsayılan gösterişli bir dağ/yol arka planı (Katalog mock amaçlı)
-  const defaultImage = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
-
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.container}>
-      <ImageBackground 
-        source={{ uri: route.heroAssetUrl || defaultImage }} 
-        style={styles.imageBg}
-        imageStyle={styles.imageRadius}
-      >
-        <View style={styles.overlay}>
-          {/* Badge */}
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{route.code}</Text>
-          </View>
-
-          {/* Texts */}
-          <View style={styles.textContainer}>
-            <Text style={styles.title} numberOfLines={2}>{route.name}</Text>
-            
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{route.plannedDistanceKm} <Text style={styles.statLabel}>km</Text></Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{route.plannedStageCount} <Text style={styles.statLabel}>etap</Text></Text>
-              </View>
-            </View>
-          </View>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.container, pressed && styles.containerPressed]}>
+      <View style={styles.headerRow}>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{route.code}</Text>
         </View>
-      </ImageBackground>
-    </TouchableOpacity>
+        <Text style={styles.routeLine} numberOfLines={1}>
+          {route.originLabel} - {route.destinationLabel}
+        </Text>
+      </View>
+
+      <Text style={styles.title} numberOfLines={2}>
+        {route.name}
+      </Text>
+
+      <Text style={styles.summary} numberOfLines={3}>
+        {route.summary}
+      </Text>
+
+      <View style={styles.footerRow}>
+        <View style={styles.statBlock}>
+          <Text style={styles.statValue}>{route.plannedDistanceKm.toLocaleString('tr-TR')}</Text>
+          <Text style={styles.statLabel}>km</Text>
+        </View>
+
+        <View style={styles.separator} />
+
+        <View style={styles.statBlock}>
+          <Text style={styles.statValue}>{route.plannedStageCount}</Text>
+          <Text style={styles.statLabel}>etap</Text>
+        </View>
+      </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 16,
-    marginVertical: 12,
-    height: 220,
+    marginVertical: 10,
+    borderRadius: 22,
+    backgroundColor: '#17171A',
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#2B2C31',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.24,
     shadowRadius: 12,
-    elevation: 8,
+    elevation: 6,
   },
-  imageBg: {
-    flex: 1,
-    justifyContent: 'flex-end',
+  containerPressed: {
+    opacity: 0.92,
   },
-  imageRadius: {
-    borderRadius: 20, // Rounded premium köşeler
-  },
-  overlay: {
-    flex: 1,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0,0,0,0.4)', // Dark gradient effect
-    padding: 20,
-    justifyContent: 'space-between',
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 16,
   },
   badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.4)',
+    backgroundColor: '#E6A52B',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
   },
   badgeText: {
-    color: '#FFF',
-    fontWeight: '700',
-    fontSize: 12,
-    letterSpacing: 1,
+    color: '#111214',
+    fontWeight: '800',
+    fontSize: 11,
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
-  textContainer: {
-    marginTop: 'auto',
+  routeLine: {
+    flex: 1,
+    color: '#B2B3B8',
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
   },
   title: {
-    color: '#FFFFFF',
+    color: '#F6F2E8',
     fontSize: 24,
     fontWeight: '800',
-    marginBottom: 12,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+    lineHeight: 29,
+    marginBottom: 10,
   },
-  statsRow: {
+  summary: {
+    color: '#B9BBC3',
+    fontSize: 15,
+    lineHeight: 22,
+    minHeight: 66,
+  },
+  footerRow: {
+    marginTop: 18,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#26272B',
     flexDirection: 'row',
     alignItems: 'center',
   },
-  statItem: {
+  statBlock: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    gap: 6,
   },
   statValue: {
-    color: '#FFD700', // Rotablo accent gold
+    color: '#F6F2E8',
     fontSize: 18,
-    fontWeight: '900',
+    fontWeight: '800',
   },
   statLabel: {
-    color: '#E0E0E0',
-    fontSize: 12,
-    fontWeight: '500',
-    marginLeft: 4,
+    color: '#8B8D95',
+    fontSize: 13,
+    fontWeight: '600',
   },
-  statDivider: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    marginHorizontal: 12,
-  }
+  separator: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#36373D',
+    marginHorizontal: 14,
+  },
 });

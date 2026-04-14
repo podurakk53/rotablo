@@ -1,8 +1,8 @@
 # Current Task Context
 
-**Phase:** Pilot route imported, publish validation next
+**Phase:** Public route catalog implemented, route detail next
 
-**Active Goal:** Use imported Route 1 as the canonical pilot dataset, lock publish validation on top of real content, then build the public/mobile flow against that dataset.
+**Active Goal:** Use published `R01` and the working mobile route catalog as the base for `T7` route detail, then move into `routeSession` planning.
 
 ## Current Reality
 
@@ -15,12 +15,13 @@
 ## Immediate Priorities
 
 1. Keep the canonical docs and task list aligned before writing new code.
-2. Lock T5 publish validation against the imported `R01` pilot route.
-3. Keep `R01` as the reference dataset for route detail, map markers, warning derivation, and vehicle compatibility.
-4. Build public route browsing after publish validation rules are in place.
-5. Build `routeSession` start / resume / planning flow before warning implementation.
-6. Build the static route warning system only with the locked trait set and compatibility rules.
-7. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.
+2. Keep `R01` as the reference dataset for route detail, map markers, warning derivation, and vehicle compatibility.
+3. Build `T7` route detail on top of the real published catalog dataset.
+4. Add editorial timestamps and small validation tightenings during `T6-T7`, not as blockers.
+5. Document stale session array cleanup and generalize the route import pipeline before Route 2.
+6. Build `routeSession` start / resume / planning flow before warning implementation.
+7. Build the static route warning system only with the locked trait set and compatibility rules.
+8. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.
 
 ## Do Not Reintroduce
 

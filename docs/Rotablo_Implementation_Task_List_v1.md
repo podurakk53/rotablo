@@ -87,7 +87,7 @@ Not:
 
 ### T5. Publish validation path
 
-- Status: `next`
+- Status: `done`
 - Goal: publish checklist'i app/service logic'te enforce etmek
 - Output: publish oncesi validation
 - Acceptance:
@@ -97,16 +97,47 @@ Not:
   - unpublished/archived route icin yeni session acilamamali
   - DB trigger zorunlu olmamali
 
+Not:
+
+- `validate_route_publishability(route_id)` fonksiyonu publish-oncesi issue listesini dondurur
+- `transition_route_status(route_id, next_status)` fonksiyonu admin-only lifecycle gecisini ve child status cascade'ini yonetir
+- migration self-check'i `R01` icin publish validation issue donmedigini dogruladi
+
+## Parallel Follow-Ups
+
+### Hemen Yapilmali
+
+- `R01` admin lifecycle fonksiyonu ile `published` duruma alinmali; `T6` katalogu yalnizca published route okur.
+
+### T6-T7 Sirasinda Paralel Ele Alinabilir
+
+- `route`, `stage`, `side_quest` ve `hazard_profile` icin `created_at` / `updated_at` alanlari eklenmeli.
+- `heroAssetId` / `mediaAsset` gibi deferred alanlar doc-schema farki yaratmayacak sekilde acikca `later` olarak isaretlenmeli.
+- `validate_route_publishability()` kapsami stage sequence, planlanan stage sayisi ve toplam mesafe gibi editorial tutarlilik kontrolleriyle genisletilebilir.
+- Archive / unpublish sonrasi mevcut session sahibi icin aciklayici read-only UX mesaji `T7-T9` akisinda yazilmali.
+- R01 importundaki ham metin cilalari (`Elite` gibi cift tirnak kacislari) UI'a tasinmadan temizlenmeli.
+
+### Route 2'den Once Netlesmeli
+
+- `selectedStageIds` ve `plannedSideQuestIds` icindeki stale UUID'ler icin temizleme / ignore stratejisi dokumante edilmeli.
+- CSV -> normalized pack -> import akisi `R01`e ozel olmaktan cikarilip ikinci route icin tekrar kullanilabilir hale getirilmeli.
+
 ## Phase 3 - Public Consumption
 
 ### T6. Mobile route catalog
 
-- Status: `next`
+- Status: `done`
 - Goal: published route listesi gostermek
 - Output: katalog ekrani
 - Acceptance:
   - sadece published route'lar gorunmeli
   - route name, summary, origin, destination, distance gosterilmeli
+
+Not:
+
+- `R01` `20260414234500_t6_publish_r01.sql` migration'i ile published duruma alindi
+- katalog ekrani mock yerine Supabase REST uzerinden published route listesi okur
+- `mobile/.env.example` Expo public Supabase degiskenlerini tanimlar
 
 ### T7. Mobile route detail
 
