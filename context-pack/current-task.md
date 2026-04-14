@@ -1,8 +1,8 @@
 # Current Task Context
 
-**Phase:** Auth and RLS completed, editorial bootstrap next
+**Phase:** Pilot route imported, publish validation next
 
-**Active Goal:** Move from platform setup into real editorial bootstrap: enter the first pilot route, validate publish readiness, then build the public/mobile flow on top of the locked Supabase boundary.
+**Active Goal:** Use imported Route 1 as the canonical pilot dataset, lock publish validation on top of real content, then build the public/mobile flow against that dataset.
 
 ## Current Reality
 
@@ -15,10 +15,9 @@
 ## Immediate Priorities
 
 1. Keep the canonical docs and task list aligned before writing new code.
-2. Bootstrap editorial data entry next: `route`, `stage`, `sideQuest`, `hazardProfile`.
-3. Prove that one real pilot route can be entered and kept publish-ready in Supabase Studio.
-   Use `docs/Rotablo_Pilot_Content_Entry_Runbook_v1.md` as the operational entry order.
-4. Build public route browsing after editorial data entry works.
+2. Lock T5 publish validation against the imported `R01` pilot route.
+3. Keep `R01` as the reference dataset for route detail, map markers, warning derivation, and vehicle compatibility.
+4. Build public route browsing after publish validation rules are in place.
 5. Build `routeSession` start / resume / planning flow before warning implementation.
 6. Build the static route warning system only with the locked trait set and compatibility rules.
 7. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.

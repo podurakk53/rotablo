@@ -69,7 +69,7 @@
 
 ### T4. Manual content entry path
 
-- Status: `next`
+- Status: `done`
 - Goal: Supabase Studio ile bir pilot route girilebilsin
 - Output: 1 route + stage'leri + sideQuest'leri + hazardProfile'lari + operasyonel veri giris runbook'u
 - Acceptance:
@@ -79,6 +79,11 @@
   - sideQuest type ve koordinat bilgisi girilebilmeli
   - hazard trait seti warning preview uretmeye yeterli olmali
   - veri giris sirasi ve minimum checklist `docs/Rotablo_Pilot_Content_Entry_Runbook_v1.md` ile netlesmis olmali
+
+Not:
+
+- `R01` normalize edilmis CSV paketi ve import migration'i ile Supabase'e girildi
+- import kaynaklari: `supabase/imports/r01/route_pack.json`, `scripts/imports/normalize-pilot-route-r01.mjs` ve `docs/Rotablo_R01_Normalization_Notes_v1.md`
 
 ### T5. Publish validation path
 

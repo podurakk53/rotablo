@@ -33,7 +33,8 @@ V1 is:
 - Only the docs inside this repo are canonical.
 - Workspace-level historical docs were moved to `../docs-archive/` to avoid context drift.
 - `backend/` is exploratory Fastify + Prisma scaffold, not the active architecture direction.
-- `scripts/` is exploratory Excel tooling, not the main product driver.
+- `scripts/` contains support tooling; `scripts/imports/` holds repeatable route-import helpers and is not the main product runtime.
+- `supabase/imports/` contains generated import packs for repeatable data entry, not canonical product docs.
 - V1 cost discipline is `free-first`, `single-project-first`, and `no paid expansion before pilot value is proven`.
 
 ## Runtime Model In One Sentence
