@@ -9,11 +9,15 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { fetchPublishedRoutes } from './catalog.api';
 import type { RouteCatalogItem } from './catalog.types';
 import { RouteCard } from '../../shared/components/RouteCard';
+import type { RootStackParamList } from '../../navigation/Root';
 
 export const RouteCatalogScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [routes, setRoutes] = useState<RouteCatalogItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -52,8 +56,7 @@ export const RouteCatalogScreen = () => {
         <Text style={styles.headerSubtitle}>Yayinlanmis Rotalar</Text>
         <Text style={styles.headerTitle}>Rota Katalogu</Text>
         <Text style={styles.headerDescription}>
-          Editoryal olarak hazirlanan published rotalari kesfet. R01 publish edildigi anda bu
-          liste gercek Supabase verisini gostermeye baslar.
+          Bu liste artik mock veri degil. Published route kataloğu Supabase uzerinden okunuyor.
         </Text>
       </View>
 
@@ -80,14 +83,13 @@ export const RouteCatalogScreen = () => {
           contentContainerStyle={routes.length === 0 ? styles.emptyListContent : styles.listContent}
           refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={() => void loadRoutes('refresh')} />}
           renderItem={({ item }) => (
-            <RouteCard route={item} onPress={() => console.log('Route detail yakinda:', item.slug)} />
+            <RouteCard route={item} onPress={() => navigation.navigate('RouteDetail', { routeId: item.id })} />
           )}
           ListEmptyComponent={
             <View style={styles.centerState}>
               <Text style={styles.stateTitle}>Henuz yayinlanmis rota yok</Text>
               <Text style={styles.stateBody}>
-                Katalog yalnizca `published` route gosterir. Publish sonrasi ilk gorunen veri `R01`
-                olacak.
+                Katalog yalnizca `published` route gosterir. Admin publish sonrasi rota burada gorunur.
               </Text>
             </View>
           }

@@ -1,8 +1,8 @@
 # Current Task Context
 
-**Phase:** Public route catalog implemented, route detail next
+**Phase:** Public route detail implemented, routeSession planning next
 
-**Active Goal:** Use published `R01` and the working mobile route catalog as the base for `T7` route detail, then move into `routeSession` planning.
+**Active Goal:** Use published `R01`, the working catalog, and the new route detail screen as the base for `T9` routeSession planning.
 
 ## Current Reality
 
@@ -15,11 +15,11 @@
 ## Immediate Priorities
 
 1. Keep the canonical docs and task list aligned before writing new code.
-2. Keep `R01` as the reference dataset for route detail, map markers, warning derivation, and vehicle compatibility.
-3. Build `T7` route detail on top of the real published catalog dataset.
-4. Add editorial timestamps and small validation tightenings during `T6-T7`, not as blockers.
-5. Document stale session array cleanup and generalize the route import pipeline before Route 2.
-6. Build `routeSession` start / resume / planning flow before warning implementation.
+2. Keep `R01` as the reference dataset for routeSession planning, warning derivation, and vehicle compatibility.
+3. Build `T8` vehicle profile create/edit/select flow before routeSession creation.
+4. Build `T9` routeSession start / resume / planning flow on top of the real published route detail dataset.
+5. Add editorial timestamps and small validation tightenings in parallel, not as blockers.
+6. Document stale session array cleanup and generalize the route import pipeline before Route 2.
 7. Build the static route warning system only with the locked trait set and compatibility rules.
 8. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.
 

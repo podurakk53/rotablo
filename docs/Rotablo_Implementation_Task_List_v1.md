@@ -141,7 +141,7 @@ Not:
 
 ### T7. Mobile route detail
 
-- Status: `next`
+- Status: `done`
 - Goal: published route detayini gostermek
 - Output: route detail ekrani
 - Acceptance:
@@ -150,6 +150,12 @@ Not:
   - statik harita uzerinde sideQuest marker'lari gorunmeli
   - sideQuest karti veya marker'i ile `Google Maps ile ac` handoff'u calismali
   - statik route metadata okunabilir olmali
+
+Not:
+
+- catalog kartlari artik `RouteDetail` ekranina navigate eder
+- detail fetch'i published route, ordered stage ve host-stage side quest hiyerarsisini Supabase REST uzerinden okur
+- marker paneli canli navigasyon degil, side quest koordinatlarindan uretilen statik marker gorunumudur
 
 ### T8. Vehicle profile CRUD
 

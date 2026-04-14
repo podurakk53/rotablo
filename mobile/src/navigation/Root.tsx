@@ -3,10 +3,16 @@ import { Text, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RouteCatalogScreen } from '../features/catalog/RouteCatalogScreen';
+import { RouteDetailScreen } from '../features/detail/RouteDetailScreen';
 import { VehicleProfileForm } from '../features/vehicles/VehicleProfileForm';
 
+export type RootStackParamList = {
+  Main: undefined;
+  RouteDetail: { routeId: string };
+};
+
 const Tab = createBottomTabNavigator();
-const RootStack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const SessionPlaceholderScreen = () => (
   <View style={styles.center}>
@@ -41,6 +47,18 @@ export function RootNavigator() {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       <RootStack.Screen name="Main" component={MainTabs} />
+      <RootStack.Screen
+        name="RouteDetail"
+        component={RouteDetailScreen}
+        options={{
+          headerShown: true,
+          presentation: 'card',
+          headerStyle: styles.header,
+          headerTitleStyle: styles.headerTitle,
+          headerTintColor: '#F6F2E8',
+          title: 'Route Detail',
+        }}
+      />
     </RootStack.Navigator>
   );
 }
