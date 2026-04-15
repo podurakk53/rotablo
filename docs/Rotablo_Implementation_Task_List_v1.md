@@ -111,9 +111,9 @@ Not:
 
 ### T6-T7 Sirasinda Paralel Ele Alinabilir
 
-- `route`, `stage`, `side_quest` ve `hazard_profile` icin `created_at` / `updated_at` alanlari eklenmeli.
+- `route`, `stage`, `side_quest` ve `hazard_profile` icin `created_at` / `updated_at` alanlari eklendi.
+- `validate_route_publishability()` kapsami stage sequence ve planlanan stage sayisi gibi editorial tutarlilik kontrolleriyle genisletildi.
 - `heroAssetId` / `mediaAsset` gibi deferred alanlar doc-schema farki yaratmayacak sekilde acikca `later` olarak isaretlenmeli.
-- `validate_route_publishability()` kapsami stage sequence, planlanan stage sayisi ve toplam mesafe gibi editorial tutarlilik kontrolleriyle genisletilebilir.
 - Archive / unpublish sonrasi mevcut session sahibi icin aciklayici read-only UX mesaji `T7-T9` akisinda yazilmali.
 - R01 importundaki ham metin cilalari (`Elite` gibi cift tirnak kacislari) UI'a tasinmadan temizlenmeli.
 
@@ -276,9 +276,6 @@ Not:
 
 - current mobile implementation butce senaryosunu Session tab icinde local state ile tutar
 - hesap route ana km'si uzerinden yapilir; side quest etkisi sonraki iterasyonda derinlestirilebilir
-- Acceptance:
-  - yakit, konaklama, yemek girdileri kullanilabilmeli
-  - route estimate ve sideQuest etkisi gosterilebilmeli
 
 ## Phase 6 - Deferred
 

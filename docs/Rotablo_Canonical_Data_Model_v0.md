@@ -85,11 +85,14 @@ Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar 
 - `heroAssetId` nullable
 - `publishedAt` nullable
 - `revisionNumber`
+- `createdAt`
+- `updatedAt`
 
 ### Notlar
 
 - route, kullanici tarafindan olusturulmaz
 - public gorunurluk icin esas durum `published` olmalidir
+- editorial icerik tablolarinda `createdAt` ve `updatedAt` izlenebilirlik icin tutulur
 
 ## 4.2 `stage`
 
@@ -121,6 +124,8 @@ Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar 
 - `foodOptions` nullable
 - `hazardProfileId`
 - `status` = `draft` | `published` | `archived`
+- `createdAt`
+- `updatedAt`
 
 ## 4.3 `sideQuest`
 
@@ -146,6 +151,8 @@ Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar 
 - `questTags`
 - `hazardProfileId`
 - `status` = `draft` | `published` | `archived`
+- `createdAt`
+- `updatedAt`
 
 ### Notlar
 
@@ -171,6 +178,8 @@ Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar 
 - `remoteAccessRisk` boolean
 - `fatigueLoad` = `low` | `medium` | `high`
 - `notes` nullable
+- `createdAt`
+- `updatedAt`
 
 ### Notlar
 

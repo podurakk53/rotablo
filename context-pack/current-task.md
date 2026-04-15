@@ -2,7 +2,7 @@
 
 **Phase:** Core V1 companion loop implemented, hardening next
 
-**Active Goal:** Harden the now-working pilot loop, keep docs aligned, and decide the next persistence / cleanup / push slice.
+**Active Goal:** Harden the now-working pilot loop, keep docs aligned, and decide which local runtime state should move to Supabase next.
 
 ## Current Reality
 
@@ -18,7 +18,7 @@
 2. Keep `R01` as the reference dataset for routeSession planning, warning derivation, and vehicle compatibility.
 3. Keep the new Garage flow on the locked path: curated vehicle reference dataset plus manual fallback.
 4. Decide which local runtime pieces should move to Supabase persistence next.
-5. Add editorial timestamps and small validation tightenings in parallel, not as blockers.
+5. Editorial timestamps and basic publish validation hardening are in place; continue with persistence and cleanup decisions.
 6. Document stale session array cleanup and generalize the route import pipeline before Route 2.
 7. Keep the warning system deterministic and tied only to the locked hazard trait set.
 8. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.
