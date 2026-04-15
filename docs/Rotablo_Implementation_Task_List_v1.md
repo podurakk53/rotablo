@@ -159,16 +159,26 @@ Not:
 
 ### T8. Vehicle profile CRUD
 
-- Status: `next`
-- Goal: kullanici 6 alanli arac profilini olusturabilsin
-- Output: create / edit / select flow
+- Status: `done`
+- Goal: kullanici hibrit picker + manual override ile arac profilini olusturabilsin
+- Output: create / edit / select flow, curated vehicle reference lookup, manual fallback
 - Acceptance:
-  - 6 zorunlu alan validate edilmeli
+  - kullanici `marka -> model -> yil -> lastik` akisiyla ilerleyebilmeli
+  - sistem `bodyType`, `drivetrain`, `groundClearanceClass` icin ilk oneriyi uretebilmeli
+  - kullanici onerilen teknik alanlari manuel override edebilmeli
+  - curated dataset disindaki araclar icin manual fallback akisi olmali
+  - create / edit / select davranisi tek Garage ekraninda calisiyor olmali
+  - auth-backed persistence acilana kadar local garage state ile test edilebilmeli
   - secili profil routeSession olustururken kullanilabilmeli
+
+Not:
+
+- mobil Garage ekrani artik local curated dataset + manual fallback ile calisiyor
+- auth-backed Supabase persistence, routeSession create akisi acildiginda ayni profile modeline baglanacak
 
 ### T9. RouteSession start/resume and planning flow
 
-- Status: `next`
+- Status: `done`
 - Goal: kullanici routeSession baslatabilsin, devam edebilsin ve sideQuest planini yonetebilsin
 - Output: `routeSession` create + status transition + planning state
 - Acceptance:
@@ -179,11 +189,17 @@ Not:
   - planned sideQuest'ler acik session icinde sonradan degistirilebilmeli
   - ayni `userId + routeId` icin birden fazla acik `active` veya `incomplete` session uretilmemeli
 
+Not:
+
+- current mobile implementation routeSession state'ini local store uzerinde tutar
+- Route detail ekrani session baslatma, ara verme, resume, complete ve planning kontrolunu birlikte verir
+- Session tab, active / incomplete / completed oturumlarin kisa operasyon paneli olarak calisir
+
 ## Phase 4 - Route Warnings and Compatibility
 
 ### T10. General route warning derivation
 
-- Status: `next`
+- Status: `done`
 - Goal: route, stage ve sideQuest hazard trait'lerinden genel route warning kartlari uretmek
 - Output: route warning summary logic
 - Acceptance:
@@ -191,9 +207,15 @@ Not:
   - ruleCode bazli standard kartlar uretilmeli
   - severity sirasi korunmali
 
+Not:
+
+- route, stage ve planned sideQuest kapsami icin deterministic rule engine mobil istemci tarafinda calisir
+- session yoksa warning ozetleri tum published route kapsami icin uretilir
+- acik session varsa warning kapsami secili etaplar ve planli side quest'lere daralir
+
 ### T11. Vehicle compatibility warnings
 
-- Status: `next`
+- Status: `done`
 - Goal: secili arac profiline gore uyumluluk uyarisi uretmek
 - Output: vehicle compatibility warning logic
 - Acceptance:
@@ -201,9 +223,14 @@ Not:
   - advisory copy route'u yasaklamamali
   - ayni profil + ayni route ayni warning setini vermeli
 
+Not:
+
+- acik session varsa vehicle compatibility, session'a bagli profile gore hesaplanir
+- session yoksa secili Garage profili route detail ekraninda compatibility warning uretmek icin kullanilir
+
 ### T12. Warnings UI
 
-- Status: `next`
+- Status: `done`
 - Goal: route detail veya routeSession ekraninda warning kartlarini gostermek
 - Output: route warnings bolumu
 - Acceptance:
@@ -211,22 +238,44 @@ Not:
   - secili arac varsa vehicle compatibility uyarilari gorunmeli
   - warning kartlari severity sirasiyla listelenmeli
 
+Not:
+
+- warning kartlari route detail ekraninda session panelinin hemen altinda gosterilir
+- kartlar `high > caution > info` sirasini korur
+- her kart rule code, advisory copy ve kaynak ozetini tasir
+
 ## Phase 5 - Completion and Budget
 
 ### T13. Manual completion flow
 
-- Status: `later`
+- Status: `done`
 - Goal: stage ve sideQuest completion islemek
 - Output: completion UI
 - Acceptance:
   - entityType `stage|sideQuest` ile completion yazilabilmeli
   - gerekli stage'ler tamamlaninca route tamamla butonu gorunmeli
 
+Not:
+
+- route detail ekrani artik acik session icinde stage ve sideQuest completion toggle'lari tasir
+- route tamamlama gecisi, secili stage'ler tamamlanmadan acilmaz
+- completion kayitlari lokal runtime state'te `completionSource = manual` mantigiyla tutulur
+
 ### T14. Budget scenario flow
 
-- Status: `later`
+- Status: `done`
 - Goal: estimate bazli butce simulasyonu
 - Output: budgetScenario create/edit/use
+
+Acceptance:
+  - oturum bazli butce senaryosu create / edit davranisi calisiyor olmali
+  - yakit, tuketim, konaklama ve yeme icme girdilerinden tahmini toplam uretilmeli
+  - budget senaryosu acik session'a baglanabilmeli
+
+Not:
+
+- current mobile implementation butce senaryosunu Session tab icinde local state ile tutar
+- hesap route ana km'si uzerinden yapilir; side quest etkisi sonraki iterasyonda derinlestirilebilir
 - Acceptance:
   - yakit, konaklama, yemek girdileri kullanilabilmeli
   - route estimate ve sideQuest etkisi gosterilebilmeli

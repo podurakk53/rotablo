@@ -64,7 +64,7 @@ Tamamlama manueldir. `completionSource = manual` ve GPS dogrulama yoktur.
 
 ## Karar 7: Arac Profili
 
-6 alan zorunludur:
+Uyumluluk motoru icin 6 alan zorunludur:
 
 1. marka
 2. model
@@ -72,6 +72,22 @@ Tamamlama manueldir. `completionSource = manual` ve GPS dogrulama yoktur.
 4. cekis tipi
 5. yerden yukseklik sinifi
 6. lastik mevsimi
+
+V1 arac profili capture flow'u ise su sekildedir:
+
+1. marka sec
+2. model sec
+3. yil sec
+4. lastik mevsimi sec
+5. sistem `govde tipi`, `cekis tipi`, `yerden yukseklik sinifi` onerir
+6. kullanici isterse bu teknik alanlari manuel override eder
+
+Kurallar:
+
+- canli Sahibinden veya benzeri bir entegrasyon yok
+- kucuk curated vehicle reference dataset ile baslanir
+- eslesme yoksa manuel fallback akisi acilir
+- sistem kullaniciyi hizlandirir ama teknik alanlari zorla kilitlemez
 
 ## Karar 8: Route Warnings Sistemi
 

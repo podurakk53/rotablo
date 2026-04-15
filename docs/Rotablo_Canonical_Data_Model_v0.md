@@ -213,10 +213,12 @@ Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar 
 - `userId`
 - `brand`
 - `model`
+- `modelYear` nullable
 - `bodyType`
 - `drivetrain`
 - `groundClearanceClass`
 - `tireSeason`
+- `referenceVehicleKey` nullable
 - `isPrimary`
 
 ### Enumlar
@@ -225,6 +227,13 @@ Auth ve RLS icin `app_user_role` gibi yardimci SQL tablolar bulunabilir. Bunlar 
 - `drivetrain`: `fwd` | `rwd` | `awd` | `4wd`
 - `groundClearanceClass`: `low` | `medium` | `high`
 - `tireSeason`: `summer` | `allSeason` | `winter`
+
+### Notlar
+
+- Uyumluluk motoru acisindan cekirdek alanlar yine `brand`, `model`, `bodyType`, `drivetrain`, `groundClearanceClass`, `tireSeason` setidir.
+- `modelYear`, lookup ve otomatik teknik alan onerisi icin kullanilan yardimci alandir.
+- `referenceVehicleKey`, secim curated vehicle reference dataset uzerinden geldiyse opsiyonel olarak saklanabilir.
+- Kullanici `bodyType`, `drivetrain` ve `groundClearanceClass` alanlarini sistem onerisine ragmen manuel override edebilir.
 
 ## 6.2 `routeSession`
 

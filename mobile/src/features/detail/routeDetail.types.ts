@@ -1,3 +1,19 @@
+export type HazardDensity = 'low' | 'medium' | 'high';
+
+export interface HazardProfileTraits {
+  lowClearanceRisk: boolean;
+  roughSurfaceRisk: boolean;
+  highAltitudeRisk: boolean;
+  narrowRoadRisk: boolean;
+  steepGradeRisk: boolean;
+  hairpinDensity: HazardDensity;
+  rainSensitive: boolean;
+  fogSensitive: boolean;
+  snowSensitive: boolean;
+  remoteAccessRisk: boolean;
+  fatigueLoad: HazardDensity;
+}
+
 export interface RouteDetailSideQuest {
   id: string;
   code: string;
@@ -10,6 +26,7 @@ export interface RouteDetailSideQuest {
   distanceKm: number;
   latitude: number;
   longitude: number;
+  hazard: HazardProfileTraits;
 }
 
 export interface RouteDetailStage {
@@ -22,6 +39,7 @@ export interface RouteDetailStage {
   destinationLabel: string;
   summary: string;
   distanceKm: number;
+  hazard: HazardProfileTraits;
   sideQuests: RouteDetailSideQuest[];
 }
 

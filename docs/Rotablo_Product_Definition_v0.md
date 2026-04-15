@@ -185,7 +185,7 @@ Net sinirlar:
 
 ## 9. Arac Profili ve Uyari Sistemi
 
-V1 arac profili alanlari:
+V1 uyumluluk motoru hala ayni 6 cekirdek alani kullanir:
 
 1. marka
 2. model
@@ -193,6 +193,23 @@ V1 arac profili alanlari:
 4. cekis tipi
 5. yerden yukseklik sinifi
 6. lastik mevsimi
+
+Ama kullaniciya gosterilen veri giris akisi artik tamamen serbest metin degildir.
+
+V1 capture flow:
+
+1. marka sec
+2. model sec
+3. yil sec
+4. lastik mevsimini sec
+5. sistem `govde tipi`, `cekis tipi` ve `yerden yukseklik sinifi` icin bir ilk oneride bulunsun
+6. kullanici isterse bu teknik alanlari manuel duzeltebilsin
+
+Bu akisin amaci, kullaniciyi hizlandirmak ama kritik uyumluluk alanlarini "sessizce kilitlememek"tir.
+
+V1'de canli Sahibinden entegrasyonu veya dis pazar yeri bagimliligi yoktur.
+Ilk surumde kucuk bir curated vehicle reference dataset kullanilir.
+Eslesme yoksa kullanici manuel fallback akisina duser.
 
 Ornek advisory mantik:
 

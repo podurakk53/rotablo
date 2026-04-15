@@ -1,8 +1,8 @@
 # Current Task Context
 
-**Phase:** Public route detail implemented, routeSession planning next
+**Phase:** Core V1 companion loop implemented, hardening next
 
-**Active Goal:** Use published `R01`, the working catalog, and the new route detail screen as the base for `T9` routeSession planning.
+**Active Goal:** Harden the now-working pilot loop, keep docs aligned, and decide the next persistence / cleanup / push slice.
 
 ## Current Reality
 
@@ -16,11 +16,11 @@
 
 1. Keep the canonical docs and task list aligned before writing new code.
 2. Keep `R01` as the reference dataset for routeSession planning, warning derivation, and vehicle compatibility.
-3. Build `T8` vehicle profile create/edit/select flow before routeSession creation.
-4. Build `T9` routeSession start / resume / planning flow on top of the real published route detail dataset.
+3. Keep the new Garage flow on the locked path: curated vehicle reference dataset plus manual fallback.
+4. Decide which local runtime pieces should move to Supabase persistence next.
 5. Add editorial timestamps and small validation tightenings in parallel, not as blockers.
 6. Document stale session array cleanup and generalize the route import pipeline before Route 2.
-7. Build the static route warning system only with the locked trait set and compatibility rules.
+7. Keep the warning system deterministic and tied only to the locked hazard trait set.
 8. Keep the implementation on the cost-minimizing path: one Supabase project, Studio-first admin, minimal media.
 
 ## Do Not Reintroduce

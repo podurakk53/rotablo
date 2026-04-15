@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RouteCatalogScreen } from '../features/catalog/RouteCatalogScreen';
 import { RouteDetailScreen } from '../features/detail/RouteDetailScreen';
+import { RouteSessionScreen } from '../features/sessions/RouteSessionScreen';
 import { VehicleProfileForm } from '../features/vehicles/VehicleProfileForm';
 
 export type RootStackParamList = {
@@ -13,15 +14,6 @@ export type RootStackParamList = {
 
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator<RootStackParamList>();
-
-const SessionPlaceholderScreen = () => (
-  <View style={styles.center}>
-    <Text style={styles.placeholderTitle}>Route Session yakinda</Text>
-    <Text style={styles.placeholderBody}>
-      T9 ile birlikte active, incomplete ve completed session akisi burada acilacak.
-    </Text>
-  </View>
-);
 
 function MainTabs() {
   return (
@@ -37,7 +29,7 @@ function MainTabs() {
       }}
     >
       <Tab.Screen name="Catalog" component={RouteCatalogScreen} options={{ title: 'Rotalar' }} />
-      <Tab.Screen name="Session" component={SessionPlaceholderScreen} options={{ title: 'Oturum' }} />
+      <Tab.Screen name="Session" component={RouteSessionScreen} options={{ title: 'Oturum' }} />
       <Tab.Screen name="Garage" component={VehicleProfileForm} options={{ title: 'Garaj' }} />
     </Tab.Navigator>
   );
@@ -64,25 +56,6 @@ export function RootNavigator() {
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 28,
-    backgroundColor: '#0F1012',
-  },
-  placeholderTitle: {
-    color: '#F6F2E8',
-    fontSize: 24,
-    fontWeight: '800',
-    marginBottom: 10,
-  },
-  placeholderBody: {
-    color: '#A7A9B0',
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
   tabBar: {
     backgroundColor: '#121317',
     borderTopColor: '#26272B',

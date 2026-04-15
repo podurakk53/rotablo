@@ -1,4 +1,4 @@
-import type { RouteDetail, RouteDetailSideQuest, RouteDetailStage } from './routeDetail.types';
+import type { HazardProfileTraits, RouteDetail, RouteDetailSideQuest, RouteDetailStage } from './routeDetail.types';
 
 type RouteDetailRow = {
   id: string;
@@ -23,6 +23,7 @@ type RouteDetailRow = {
     destination_label: string;
     summary: string;
     distance_km: number;
+    hazard: HazardRow | null;
     sideQuests: Array<{
       id: string;
       code: string;
@@ -35,6 +36,7 @@ type RouteDetailRow = {
       distance_km: number;
       latitude: number;
       longitude: number;
+      hazard: HazardRow | null;
     }> | null;
   }> | null;
 };
@@ -51,6 +53,21 @@ type SideQuestRow = {
   distance_km: number;
   latitude: number;
   longitude: number;
+  hazard: HazardRow | null;
+};
+
+type HazardRow = {
+  low_clearance_risk: boolean;
+  rough_surface_risk: boolean;
+  high_altitude_risk: boolean;
+  narrow_road_risk: boolean;
+  steep_grade_risk: boolean;
+  hairpin_density: HazardProfileTraits['hairpinDensity'];
+  rain_sensitive: boolean;
+  fog_sensitive: boolean;
+  snow_sensitive: boolean;
+  remote_access_risk: boolean;
+  fatigue_load: HazardProfileTraits['fatigueLoad'];
 };
 
 function readPublicEnv(name: 'EXPO_PUBLIC_SUPABASE_URL' | 'EXPO_PUBLIC_SUPABASE_ANON_KEY') {
@@ -69,6 +86,22 @@ function getSupabaseRestConfig() {
   return { url, anonKey };
 }
 
+function mapHazard(row: HazardRow | null): HazardProfileTraits {
+  return {
+    lowClearanceRisk: row?.low_clearance_risk ?? false,
+    roughSurfaceRisk: row?.rough_surface_risk ?? false,
+    highAltitudeRisk: row?.high_altitude_risk ?? false,
+    narrowRoadRisk: row?.narrow_road_risk ?? false,
+    steepGradeRisk: row?.steep_grade_risk ?? false,
+    hairpinDensity: row?.hairpin_density ?? 'low',
+    rainSensitive: row?.rain_sensitive ?? false,
+    fogSensitive: row?.fog_sensitive ?? false,
+    snowSensitive: row?.snow_sensitive ?? false,
+    remoteAccessRisk: row?.remote_access_risk ?? false,
+    fatigueLoad: row?.fatigue_load ?? 'low',
+  };
+}
+
 function mapSideQuest(row: SideQuestRow): RouteDetailSideQuest {
   return {
     id: row.id,
@@ -82,6 +115,7 @@ function mapSideQuest(row: SideQuestRow): RouteDetailSideQuest {
     distanceKm: row.distance_km,
     latitude: row.latitude,
     longitude: row.longitude,
+    hazard: mapHazard(row.hazard),
   };
 }
 
@@ -96,6 +130,7 @@ function mapStage(row: NonNullable<RouteDetailRow['stages']>[number]): RouteDeta
     destinationLabel: row.destination_label,
     summary: row.summary,
     distanceKm: row.distance_km,
+    hazard: mapHazard(row.hazard),
     sideQuests: (row.sideQuests ?? []).map(mapSideQuest).sort((a, b) => a.orderIndex - b.orderIndex),
   };
 }
@@ -106,7 +141,7 @@ export async function fetchPublishedRouteDetail(routeId: string): Promise<RouteD
 
   endpoint.searchParams.set(
     'select',
-    'id,code,slug,name,family,summary,origin_label,destination_label,planned_distance_km,planned_stage_count,is_loop,region_set,stages:stage(id,code,slug,sequence_index,title,origin_label,destination_label,summary,distance_km,sideQuests:side_quest(id,code,slug,order_index,name,type,stop_style,summary,distance_km,latitude,longitude))'
+    'id,code,slug,name,family,summary,origin_label,destination_label,planned_distance_km,planned_stage_count,is_loop,region_set,stages:stage(id,code,slug,sequence_index,title,origin_label,destination_label,summary,distance_km,hazard:hazard_profile(low_clearance_risk,rough_surface_risk,high_altitude_risk,narrow_road_risk,steep_grade_risk,hairpin_density,rain_sensitive,fog_sensitive,snow_sensitive,remote_access_risk,fatigue_load),sideQuests:side_quest(id,code,slug,order_index,name,type,stop_style,summary,distance_km,latitude,longitude,hazard:hazard_profile(low_clearance_risk,rough_surface_risk,high_altitude_risk,narrow_road_risk,steep_grade_risk,hairpin_density,rain_sensitive,fog_sensitive,snow_sensitive,remote_access_risk,fatigue_load)))'
   );
   endpoint.searchParams.set('id', `eq.${routeId}`);
   endpoint.searchParams.set('status', 'eq.published');
